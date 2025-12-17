@@ -25,3 +25,9 @@ variable "parent_id" {
   description = "Parent organizational unit ID"
   type        = string
 }
+
+variable "tags" {
+  description = "Tags to apply to the organizational unit"
+  type        = map(string)
+  default     = {}
+}
