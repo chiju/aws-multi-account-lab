@@ -36,14 +36,10 @@ jobs:
       - name: Get Terragrunt Outputs
         id: terraform
         run: |
-          cd terragrunt/environments/dev/eks
+          cd terragrunt/infrastructure/dev/eks
           terragrunt init
           echo "cluster_name=$(terragrunt output -raw cluster_name)" >> $GITHUB_OUTPUT
           echo "cluster_endpoint=$(terragrunt output -raw cluster_endpoint)" >> $GITHUB_OUTPUT
-          echo "karpenter_role_arn=$(terragrunt output -raw karpenter_controller_role_arn)" >> $GITHUB_OUTPUT
-          echo "karpenter_node_role=$(terragrunt output -raw karpenter_node_role_name)" >> $GITHUB_OUTPUT
-          echo "interruption_queue=$(terragrunt output -raw karpenter_sqs_queue_name)" >> $GITHUB_OUTPUT
-          echo "grafana_role_arn=$(terragrunt output -raw grafana_cloudwatch_role_arn)" >> $GITHUB_OUTPUT
           
           cd ../iam
           terragrunt init

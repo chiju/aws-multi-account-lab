@@ -154,6 +154,13 @@ jobs:
           TF_VAR_github_app_private_key: ${{ secrets.ARGOCD_APP_PRIVATE_KEY }}
         run: terragrunt apply --all --auto-approve --non-interactive
 
+  update-app-values:
+    name: Update App Values
+    needs: [deploy-dev]
+    if: github.event.inputs.action == 'apply'
+    uses: ./.github/workflows/update-app-values.yml
+    secrets: inherit
+
   plan-staging:
     name: Plan Staging Infrastructure
     runs-on: ubuntu-latest
