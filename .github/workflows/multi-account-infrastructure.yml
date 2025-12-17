@@ -110,12 +110,12 @@ jobs:
       - name: Plan Dev Infrastructure
         if: github.event.inputs.action == 'plan'
         working-directory: terragrunt/organization/01-organization/02-platform-ou/03-accounts/dev
-        run: terragrunt plan --all --non-interactive
+        run: terragrunt plan --all --terragrunt-exclude-dir . --non-interactive
 
       - name: Plan with Output Files
         if: github.event.inputs.action == 'apply'
         working-directory: terragrunt/organization/01-organization/02-platform-ou/03-accounts/dev
-        run: terragrunt plan --all --out-dir /tmp/dev-plans --non-interactive
+        run: terragrunt plan --all --terragrunt-exclude-dir . --out-dir /tmp/dev-plans --non-interactive
 
       - name: Upload Plan Files
         if: github.event.inputs.action == 'apply'
@@ -128,7 +128,7 @@ jobs:
       - name: Apply Exact Plans
         if: github.event.inputs.action == 'apply'
         working-directory: terragrunt/organization/01-organization/02-platform-ou/03-accounts/dev
-        run: terragrunt apply --all --out-dir /tmp/dev-plans --non-interactive
+        run: terragrunt apply --all --terragrunt-exclude-dir . --out-dir /tmp/dev-plans --non-interactive
 
   deploy-staging:
     name: Staging Infrastructure
