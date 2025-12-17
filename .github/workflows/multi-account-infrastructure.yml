@@ -110,12 +110,12 @@ jobs:
       - name: Plan Dev Infrastructure
         if: github.event.inputs.action == 'plan'
         working-directory: terragrunt/organization/01-organization/02-platform-ou/03-accounts/dev
-        run: terragrunt plan --all --experiment filter-flag --filter '!.' --non-interactive
+        run: terragrunt plan --all --experiment filter-flag --filter '!./terragrunt.hcl' --non-interactive
 
       - name: Plan with Output Files
         if: github.event.inputs.action == 'apply'
         working-directory: terragrunt/organization/01-organization/02-platform-ou/03-accounts/dev
-        run: terragrunt plan --all --experiment filter-flag --filter '!.' --out-dir /tmp/dev-plans --non-interactive
+        run: terragrunt plan --all --experiment filter-flag --filter '!./terragrunt.hcl' --out-dir /tmp/dev-plans --non-interactive
 
       - name: Upload Plan Files
         if: github.event.inputs.action == 'apply'
@@ -128,7 +128,7 @@ jobs:
       - name: Apply Exact Plans
         if: github.event.inputs.action == 'apply'
         working-directory: terragrunt/organization/01-organization/02-platform-ou/03-accounts/dev
-        run: terragrunt apply --all --experiment filter-flag --filter '!.' --out-dir /tmp/dev-plans --non-interactive
+        run: terragrunt apply --all --experiment filter-flag --filter '!./terragrunt.hcl' --out-dir /tmp/dev-plans --non-interactive
 
   deploy-staging:
     name: Staging Infrastructure
