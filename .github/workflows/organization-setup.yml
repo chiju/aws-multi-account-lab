@@ -50,12 +50,12 @@ jobs:
       - name: Plan Organization
         if: github.event.inputs.action == 'plan'
         working-directory: terragrunt/organization/01-organization
-        run: terragrunt run --all plan --non-interactive
+        run: terragrunt plan --all --non-interactive
 
       - name: Plan with Output Files
         if: github.event.inputs.action == 'apply'
         working-directory: terragrunt/organization/01-organization
-        run: terragrunt run --all plan --out-dir /tmp/terragrunt-plans --non-interactive
+        run: terragrunt plan --all --out-dir /tmp/terragrunt-plans --non-interactive
 
       - name: Upload Plan Files
         if: github.event.inputs.action == 'apply'
@@ -68,7 +68,7 @@ jobs:
       - name: Apply Exact Plans
         if: github.event.inputs.action == 'apply'
         working-directory: terragrunt/organization/01-organization
-        run: terragrunt run --all apply --out-dir /tmp/terragrunt-plans --non-interactive
+        run: terragrunt apply --all --out-dir /tmp/terragrunt-plans --non-interactive
 
       - name: Get Account IDs
         if: github.event.inputs.action == 'apply'
