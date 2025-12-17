@@ -30,6 +30,7 @@ variable "namespace" {
 variable "service_account_name" {
   description = "Name of the Kubernetes service account"
   type        = string
+  default     = "tbyte-backend"
 }
 
 variable "rds_secret_arn" {
