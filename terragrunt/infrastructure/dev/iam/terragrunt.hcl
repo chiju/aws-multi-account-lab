@@ -32,5 +32,5 @@ inputs = {
   cluster_oidc_issuer_url = dependency.eks.outputs.cluster_oidc_issuer_url
   
   # RDS secret ARN from RDS module
-  rds_secret_arn = dependency.rds.outputs.rds_secret_arn
+  rds_secret_arn = dependency.rds.outputs.secret_arn
 }
