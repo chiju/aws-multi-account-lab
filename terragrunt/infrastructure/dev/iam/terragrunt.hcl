@@ -16,12 +16,21 @@ dependency "eks" {
   mock_outputs_allowed_terraform_commands = ["plan", "validate"]
 }
 
+dependency "rds" {
+  config_path = "../rds"
+  
+  mock_outputs = {
+    rds_secret_arn = "arn:aws:secretsmanager:eu-central-1:575491070504:secret:mock-secret"
+  }
+  mock_outputs_allowed_terraform_commands = ["plan", "validate"]
+}
+
 inputs = {
   project                 = "tbyte"
   environment             = "dev"
   cluster_name            = dependency.eks.outputs.cluster_name
   cluster_oidc_issuer_url = dependency.eks.outputs.cluster_oidc_issuer_url
   
-  # RDS secret ARN (optional, will be looked up if not provided)
-  rds_secret_arn = null
+  # RDS secret ARN from RDS module
+  rds_secret_arn = dependency.rds.outputs.rds_secret_arn
 }
