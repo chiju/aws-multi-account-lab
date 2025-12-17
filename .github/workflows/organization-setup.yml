@@ -45,12 +45,12 @@ jobs:
       - name: Plan Organization
         if: github.event.inputs.action == 'plan'
         working-directory: terragrunt/organization
-        run: terragrunt run-all plan --non-interactive --exclude-dir 00-github-oidc
+        run: terragrunt run-all plan --terragrunt-non-interactive --terragrunt-exclude-dir 00-github-oidc
 
       - name: Apply Organization
         if: github.event.inputs.action == 'apply'
         working-directory: terragrunt/organization
-        run: terragrunt run-all apply --non-interactive --auto-approve --exclude-dir 00-github-oidc
+        run: terragrunt run-all apply --terragrunt-non-interactive --terragrunt-auto-approve --terragrunt-exclude-dir 00-github-oidc
 
       - name: Get Account IDs
         if: github.event.inputs.action == 'apply'
@@ -64,4 +64,4 @@ jobs:
       - name: Destroy Organization
         if: github.event.inputs.action == 'destroy'
         working-directory: terragrunt/organization
-        run: terragrunt run-all destroy --non-interactive --auto-approve --exclude-dir 00-github-oidc
+        run: terragrunt run-all destroy --terragrunt-non-interactive --terragrunt-auto-approve --terragrunt-exclude-dir 00-github-oidc
