@@ -7,7 +7,7 @@ terraform {
 }
 
 dependency "platform_ou" {
-  config_path = "../../"
+  config_path = "../"
   
   mock_outputs = {
     id = "ou-mock"
