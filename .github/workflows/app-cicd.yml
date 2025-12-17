@@ -138,7 +138,9 @@ jobs:
 
       - name: Update Helm Values
         run: |
-          # Update tbyte-microservices with new image tags
+          # Update tbyte-microservices with new image tags and repository URLs
+          sed -i "s|repository: .*tbyte-dev-frontend|repository: ${{ env.ECR_REGISTRY }}/tbyte-dev-frontend|g" apps/tbyte-microservices/values.yaml
+          sed -i "s|repository: .*tbyte-dev-backend|repository: ${{ env.ECR_REGISTRY }}/tbyte-dev-backend|g" apps/tbyte-microservices/values.yaml
           sed -i "s|tag: \".*\"|tag: \"${{ needs.build.outputs.image-tag }}\"|g" apps/tbyte-microservices/values.yaml
 
       - name: Commit & Push GitOps Changes
