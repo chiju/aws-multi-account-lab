@@ -110,11 +110,19 @@ jobs:
       - name: Plan Dev Infrastructure
         if: github.event.inputs.action == 'plan'
         working-directory: terragrunt/infrastructure/dev
+        env:
+          TF_VAR_github_app_id: ${{ secrets.ARGOCD_APP_ID }}
+          TF_VAR_github_app_installation_id: ${{ secrets.ARGOCD_APP_INSTALLATION_ID }}
+          TF_VAR_github_app_private_key: ${{ secrets.ARGOCD_APP_PRIVATE_KEY }}
         run: terragrunt plan --all --non-interactive
 
       - name: Plan with Output Files
         if: github.event.inputs.action == 'apply'
         working-directory: terragrunt/infrastructure/dev
+        env:
+          TF_VAR_github_app_id: ${{ secrets.ARGOCD_APP_ID }}
+          TF_VAR_github_app_installation_id: ${{ secrets.ARGOCD_APP_INSTALLATION_ID }}
+          TF_VAR_github_app_private_key: ${{ secrets.ARGOCD_APP_PRIVATE_KEY }}
         run: terragrunt plan --all --out-dir /tmp/dev-plans --non-interactive
 
       - name: Upload Plan Files
@@ -128,6 +136,10 @@ jobs:
       - name: Apply Exact Plans
         if: github.event.inputs.action == 'apply'
         working-directory: terragrunt/infrastructure/dev
+        env:
+          TF_VAR_github_app_id: ${{ secrets.ARGOCD_APP_ID }}
+          TF_VAR_github_app_installation_id: ${{ secrets.ARGOCD_APP_INSTALLATION_ID }}
+          TF_VAR_github_app_private_key: ${{ secrets.ARGOCD_APP_PRIVATE_KEY }}
         run: terragrunt apply --all --out-dir /tmp/dev-plans --non-interactive
 
   deploy-staging:

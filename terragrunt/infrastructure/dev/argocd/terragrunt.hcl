@@ -29,8 +29,8 @@ inputs = {
   argocd_namespace = "argocd"
   git_repo_url     = "https://github.com/chiju/aws-multi-account-lab.git"
   
-  # GitHub App credentials (from GitHub secrets)
-  github_app_id              = ""  # Will be set by workflow
-  github_app_installation_id = ""  # Will be set by workflow
-  github_app_private_key     = ""  # Will be set by workflow
+  # GitHub App credentials (passed via TF_VAR environment variables from workflow)
+  github_app_id              = get_env("TF_VAR_github_app_id", "")
+  github_app_installation_id = get_env("TF_VAR_github_app_installation_id", "")
+  github_app_private_key     = get_env("TF_VAR_github_app_private_key", "")
 }
