@@ -28,6 +28,11 @@ output "cluster_oidc_issuer_url" {
   value       = aws_eks_cluster.eks_cluster_lrn.identity[0].oidc[0].issuer
 }
 
+output "karpenter_controller_role_arn" {
+  description = "ARN of the Karpenter controller IAM role"
+  value       = aws_iam_role.karpenter_controller_role.arn
+}
+
 output "node_group_id" {
   description = "EKS node group ID"
   value       = aws_eks_node_group.system_nodes.id
