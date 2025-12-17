@@ -4,6 +4,10 @@ include "root" {
 
 dependency "platform_ou" {
   config_path = "../.."
+  
+  mock_outputs = {
+    id = "ou-mock-platform"
+  }
 }
 
 terraform {
