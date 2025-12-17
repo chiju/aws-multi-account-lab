@@ -43,6 +43,12 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN_DEV }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Empty ECR Repositories
+        run: |
+          echo "Emptying ECR repositories..."
+          aws ecr list-images --repository-name tbyte-dev-frontend --query 'imageIds[*]' --output json | jq '.[] | select(.imageTag != null) | {imageTag}' | aws ecr batch-delete-image --repository-name tbyte-dev-frontend --image-ids file:///dev/stdin || true
+          aws ecr list-images --repository-name tbyte-dev-backend --query 'imageIds[*]' --output json | jq '.[] | select(.imageTag != null) | {imageTag}' | aws ecr batch-delete-image --repository-name tbyte-dev-backend --image-ids file:///dev/stdin || true
+
       - name: Destroy All Infrastructure
         working-directory: terragrunt/infrastructure/dev
         run: terragrunt destroy --all --auto-approve --non-interactive
