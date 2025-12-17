@@ -3,13 +3,13 @@
 
 # Data sources - conditional to allow planning without existing cluster
 data "aws_eks_cluster" "cluster" {
-  count = var.cluster_oidc_issuer_url != null && !can(regex("mock", var.cluster_oidc_issuer_url)) ? 1 : 0
+  count = var.cluster_oidc_issuer_url != null && !can(regex("(?i)mock", var.cluster_oidc_issuer_url)) ? 1 : 0
   name  = var.cluster_name
 }
 
-# Look up RDS secret by name if not provided - only if RDS might exist
+# Look up RDS secret by name if not provided - skip during plan
 data "aws_secretsmanager_secret" "rds_secret" {
-  count = var.rds_secret_arn == null ? 1 : 0 # Only lookup if not provided
+  count = var.rds_secret_arn == null && var.cluster_oidc_issuer_url != null && !can(regex("(?i)mock", var.cluster_oidc_issuer_url)) ? 1 : 0
   name  = "${var.cluster_name}-postgres-password"
 }
 
