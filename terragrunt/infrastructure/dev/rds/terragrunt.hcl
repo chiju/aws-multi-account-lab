@@ -32,5 +32,5 @@ inputs = {
   allocated_storage = 20
   
   # Security
-  allowed_cidr_blocks = [dependency.vpc.outputs.vpc_cidr_block]
+  allowed_cidr_blocks = [dependency.vpc.outputs.vpc_cidr]
 }
