@@ -52,10 +52,23 @@ jobs:
         working-directory: terragrunt/organization/01-organization
         run: terragrunt plan --all --non-interactive
 
-      - name: Apply Organization
+      - name: Plan with Output File
         if: github.event.inputs.action == 'apply'
         working-directory: terragrunt/organization/01-organization
-        run: terragrunt apply --all --non-interactive --auto-approve
+        run: terragrunt plan --all --non-interactive -out=plan.tfplan
+
+      - name: Upload Plan Files
+        if: github.event.inputs.action == 'apply'
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plans
+          path: "terragrunt/organization/01-organization/**/*.tfplan"
+          retention-days: 1
+
+      - name: Apply Exact Plan
+        if: github.event.inputs.action == 'apply'
+        working-directory: terragrunt/organization/01-organization
+        run: terragrunt apply --all --non-interactive plan.tfplan
 
       - name: Get Account IDs
         if: github.event.inputs.action == 'apply'
