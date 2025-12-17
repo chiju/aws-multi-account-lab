@@ -9,4 +9,4 @@ karpenter:
   
   serviceAccount:
     annotations:
-      eks.amazonaws.com/role-arn: 
+      eks.amazonaws.com/role-arn: arn:aws:iam::575491070504:role/KarpenterControllerRole-tbyte-dev
