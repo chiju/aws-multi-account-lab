@@ -2,7 +2,7 @@ resource "aws_organizations_account" "account" {
   name              = var.name
   email             = var.email
   parent_id         = var.parent_id
-  close_on_deletion = true
+  close_on_deletion = false
   
   tags = var.tags
   
