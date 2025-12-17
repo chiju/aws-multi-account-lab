@@ -119,7 +119,7 @@ jobs:
   deploy-dev:
     name: Deploy Dev Infrastructure
     runs-on: ubuntu-latest
-    needs: [plan-dev]
+    needs: [format-check, validate-modules, security-scan]
     if: github.event.inputs.action == 'apply'
     
     steps:
