@@ -1,17 +1,17 @@
 include "root" {
+
+dependency "platform_ou" {
+  config_path = "../.."
+}
   path = find_in_parent_folders("management-root.hcl")
+}
+
+dependency "platform_ou" {
+  config_path = "../.."
 }
 
 terraform {
   source = "../../../../../modules/aws-account"
-}
-
-dependency "platform_ou" {
-  config_path = "../"
-  
-  mock_outputs = {
-    id = "ou-mock"
-  }
 }
 
 inputs = {

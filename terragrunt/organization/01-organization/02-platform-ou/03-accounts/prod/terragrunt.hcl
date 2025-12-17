@@ -1,4 +1,8 @@
 include "root" {
+
+dependency "platform_ou" {
+  config_path = "../.."
+}
   path = find_in_parent_folders("management-root.hcl")
 }
 
