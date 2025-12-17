@@ -54,11 +54,6 @@ output "karpenter_instance_profile_name" {
   value       = aws_iam_instance_profile.karpenter_node_instance_profile.name
 }
 
-output "karpenter_controller_role_arn" {
-  description = "IAM role ARN for Karpenter controller"
-  value       = aws_iam_role.karpenter_controller.arn
-}
-
 output "karpenter_node_role_name" {
   description = "IAM role name for Karpenter nodes"
   value       = aws_iam_role.iam_role_node_group_lrn.name
