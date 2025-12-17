@@ -43,3 +43,9 @@ variable "cluster_oidc_issuer_url" {
   type        = string
   default     = null
 }
+
+variable "project" {
+  description = "Project name"
+  type        = string
+  default     = "tbyte"
+}

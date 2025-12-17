@@ -64,3 +64,9 @@ variable "max_nodes" {
   type        = number
   default     = 3
 }
+
+variable "project" {
+  description = "Project name"
+  type        = string
+  default     = "tbyte"
+}

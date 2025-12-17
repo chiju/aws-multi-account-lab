@@ -136,3 +136,9 @@ variable "skip_final_snapshot" {
   type        = bool
   default     = true # Enabled for easy cleanup in test environment
 }
+
+variable "project" {
+  description = "Project name"
+  type        = string
+  default     = "tbyte"
+}

@@ -81,3 +81,9 @@ variable "cluster_certificate_authority_data" {
   type        = string
   default     = null
 }
+
+variable "project" {
+  description = "Project name"
+  type        = string
+  default     = "tbyte"
+}
