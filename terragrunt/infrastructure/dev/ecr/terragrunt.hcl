@@ -1,9 +1,9 @@
 include "root" {
-  path = find_in_parent_folders("member-account-root.hcl")
+  path = find_in_parent_folders("root.hcl")
 }
 
 terraform {
-  source = "../../../../../../modules/ecr"
+  source = "../../../modules/ecr"
 }
 
 inputs = {
