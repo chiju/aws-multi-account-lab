@@ -50,25 +50,25 @@ jobs:
       - name: Plan Organization
         if: github.event.inputs.action == 'plan'
         working-directory: terragrunt/organization/01-organization
-        run: terragrunt plan --all --non-interactive
+        run: terragrunt run --all plan --non-interactive
 
-      - name: Plan with Output File
+      - name: Plan with Output Files
         if: github.event.inputs.action == 'apply'
         working-directory: terragrunt/organization/01-organization
-        run: terragrunt plan --all --non-interactive -out=plan.tfplan
+        run: terragrunt run --all plan --out-dir /tmp/terragrunt-plans --non-interactive
 
       - name: Upload Plan Files
         if: github.event.inputs.action == 'apply'
         uses: actions/upload-artifact@v4
         with:
           name: terraform-plans
-          path: "terragrunt/organization/01-organization/**/*.tfplan"
+          path: "/tmp/terragrunt-plans/**/*.tfplan"
           retention-days: 1
 
-      - name: Apply Exact Plan
+      - name: Apply Exact Plans
         if: github.event.inputs.action == 'apply'
         working-directory: terragrunt/organization/01-organization
-        run: terragrunt apply --all --non-interactive plan.tfplan
+        run: terragrunt run --all apply --out-dir /tmp/terragrunt-plans --non-interactive
 
       - name: Get Account IDs
         if: github.event.inputs.action == 'apply'
