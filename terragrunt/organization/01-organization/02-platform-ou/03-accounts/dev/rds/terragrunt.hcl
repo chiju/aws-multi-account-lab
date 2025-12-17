@@ -11,6 +11,7 @@ dependency "vpc" {
 }
 
 inputs = {
+  project            = "tbyte"
   environment  = "dev"
   cluster_name = "tbyte-dev"
   
