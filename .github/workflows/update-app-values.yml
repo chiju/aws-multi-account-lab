@@ -37,12 +37,12 @@ jobs:
         id: terraform
         run: |
           cd terragrunt/infrastructure/dev/eks
-          terragrunt init
+          terragrunt init --non-interactive
           echo "cluster_name=$(terragrunt output -raw cluster_name)" >> $GITHUB_OUTPUT
           echo "cluster_endpoint=$(terragrunt output -raw cluster_endpoint)" >> $GITHUB_OUTPUT
           
           cd ../iam
-          terragrunt init
+          terragrunt init --non-interactive
           echo "eso_role_arn=$(terragrunt output -raw eso_role_arn)" >> $GITHUB_OUTPUT
       
       - name: Update Karpenter values.yaml
