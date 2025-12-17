@@ -30,7 +30,7 @@ output "cluster_oidc_issuer_url" {
 
 output "karpenter_controller_role_arn" {
   description = "ARN of the Karpenter controller IAM role"
-  value       = aws_iam_role.karpenter_controller_role.arn
+  value       = aws_iam_role.karpenter_controller.arn
 }
 
 output "node_group_id" {
