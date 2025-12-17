@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "tbyte-microservices.fullname" . }}-frontend-html
+  namespace: {{ .Release.Namespace }}
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>TByte Microservices</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 40px; }
+            .container { max-width: 800px; margin: 0 auto; }
+            .status { padding: 20px; border-radius: 5px; margin: 20px 0; }
+            .success { background-color: #d4edda; color: #155724; }
+            .error { background-color: #f8d7da; color: #721c24; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>TByte Microservices Platform</h1>
+            <p>Production-ready microservices on AWS EKS with GitOps - Version 1.4.0 CANARY TEST</p>
+            <p><small>Updated: 2025-12-15 11:06 UTC</small></p>
+            
+            <!-- Broken HTML that will cause readiness probe failures -->
+            <script>
+                // This will cause the page to fail loading
+                throw new Error("Intentional error to test rollback");
+            </script>
+            
+            <div id="status" class="status">
+                <p>Checking backend connection...</p>
+            </div>
+            
+            <h2>Features</h2>
+            <ul>
+                <li>✅ Kubernetes deployment</li>
+                <li>✅ External Secrets Operator</li>
+                <li>✅ AWS RDS integration</li>
+                <li>✅ GitOps with ArgoCD</li>
+            </ul>
+        </div>
+        
+        <script>
+            fetch('/api/health')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('status').innerHTML = 
+                        '<p>✅ Backend connected successfully!</p><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                    document.getElementById('status').className = 'status success';
+                })
+                .catch(error => {
+                    document.getElementById('status').innerHTML = 
+                        '<p>❌ Backend connection failed: ' + error.message + '</p>';
+                    document.getElementById('status').className = 'status error';
+                });
+        </script>
+    </body>
+    </html>

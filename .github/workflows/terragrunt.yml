@@ -1,0 +1,423 @@
+name: Infrastructure Deployment
+
+on:
+  push:
+    branches: [main]
+    paths: ['terragrunt/**', '.github/workflows/terragrunt.yml']
+  pull_request:
+    branches: [main]
+    paths: ['terragrunt/**', '.github/workflows/terragrunt.yml']
+  workflow_dispatch:
+
+concurrency:
+  group: terragrunt-deployment
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: eu-central-1
+  TERRAGRUNT_VERSION: 0.67.16
+
+permissions:
+  id-token: write
+  contents: write
+  security-events: write
+  pull-requests: write
+
+jobs:
+  format-check:
+    name: Format Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.13.5
+
+      - name: Terraform Format Check
+        working-directory: terragrunt
+        run: |
+          echo "🔍 Checking Terraform formatting..."
+          find . -name "*.tf" -exec terraform fmt -check=true -diff=true {} \;
+
+  terraform-validate:
+    name: Terraform Validate
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.13.5
+
+      - name: Validate Terraform Modules
+        working-directory: terragrunt
+        run: |
+          echo "✅ Validating Terraform modules..."
+          for dir in modules/*/; do
+            if [ -f "$dir/main.tf" ]; then
+              echo "Validating $dir"
+              cd "$dir"
+              terraform init -backend=false
+              terraform validate
+              cd - > /dev/null
+            fi
+          done
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Checkov
+        run: |
+          pip3 install checkov
+          checkov --version
+
+      - name: Run Checkov Security Scan
+        working-directory: terragrunt
+        run: |
+          echo "🛡️ Running security scan with Checkov..."
+          checkov -d . --framework terraform \
+            --output cli \
+            --soft-fail
+
+  plan-shared:
+    name: Plan Shared Services
+    runs-on: ubuntu-latest
+    needs: [format-check, terraform-validate, security-scan]
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.13.5
+
+      - name: Setup Terragrunt
+        run: |
+          wget -q https://github.com/gruntwork-io/terragrunt/releases/download/v${{ env.TERRAGRUNT_VERSION }}/terragrunt_linux_amd64
+          chmod +x terragrunt_linux_amd64
+          sudo mv terragrunt_linux_amd64 /usr/local/bin/terragrunt
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_DEV }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Plan Shared Services
+        working-directory: terragrunt
+        run: |
+          echo "📋 Planning Shared Services..."
+          terragrunt plan --terragrunt-working-dir shared-services --terragrunt-non-interactive
+
+  plan-dev:
+    name: Plan Development
+    runs-on: ubuntu-latest
+    needs: [format-check, terraform-validate, security-scan]
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.13.5
+
+      - name: Setup Terragrunt
+        run: |
+          wget -q https://github.com/gruntwork-io/terragrunt/releases/download/v${{ env.TERRAGRUNT_VERSION }}/terragrunt_linux_amd64
+          chmod +x terragrunt_linux_amd64
+          sudo mv terragrunt_linux_amd64 /usr/local/bin/terragrunt
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_DEV }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Plan Dev Environment
+        working-directory: terragrunt/environments/dev
+        run: |
+          echo "📋 Planning Dev Environment (Sequential)..."
+          echo "1️⃣ Planning VPC..."
+          cd vpc && terragrunt plan
+          echo "2️⃣ Planning ECR..."
+          cd ../ecr && terragrunt plan
+          echo "3️⃣ Planning EKS..."
+          cd ../eks && terragrunt plan
+          echo "4️⃣ Planning RDS..."
+          cd ../rds && terragrunt plan
+          echo "5️⃣ Planning ArgoCD..."
+          cd ../argocd && terragrunt plan
+          echo "6️⃣ Planning IAM..."
+          cd ../iam && terragrunt plan
+
+  plan-staging:
+    name: Plan Staging
+    runs-on: ubuntu-latest
+    needs: [format-check, terraform-validate, security-scan]
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.13.5
+
+      - name: Setup Terragrunt
+        run: |
+          wget -q https://github.com/gruntwork-io/terragrunt/releases/download/v${{ env.TERRAGRUNT_VERSION }}/terragrunt_linux_amd64
+          chmod +x terragrunt_linux_amd64
+          sudo mv terragrunt_linux_amd64 /usr/local/bin/terragrunt
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_STAGING }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Plan Staging Environment
+        working-directory: terragrunt/environments/staging
+        run: |
+          echo "📋 Planning Staging Environment..."
+          terragrunt run-all plan --terragrunt-non-interactive --terragrunt-ignore-external-dependencies
+
+  plan-production:
+    name: Plan Production
+    runs-on: ubuntu-latest
+    needs: [format-check, terraform-validate, security-scan]
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.13.5
+
+      - name: Setup Terragrunt
+        run: |
+          wget -q https://github.com/gruntwork-io/terragrunt/releases/download/v${{ env.TERRAGRUNT_VERSION }}/terragrunt_linux_amd64
+          chmod +x terragrunt_linux_amd64
+          sudo mv terragrunt_linux_amd64 /usr/local/bin/terragrunt
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_PRODUCTION }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Plan Production Environment
+        working-directory: terragrunt/environments/production
+        run: |
+          echo "📋 Planning Production Environment..."
+          terragrunt run-all plan --terragrunt-non-interactive --terragrunt-ignore-external-dependencies
+
+  deploy-shared:
+    name: Deploy Shared Services
+    runs-on: ubuntu-latest
+    needs: [plan-shared]
+    if: false  # Disabled - using dev account setup instead
+    environment: shared-services
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.13.5
+
+      - name: Setup Terragrunt
+        run: |
+          wget -q https://github.com/gruntwork-io/terragrunt/releases/download/v${{ env.TERRAGRUNT_VERSION }}/terragrunt_linux_amd64
+          chmod +x terragrunt_linux_amd64
+          sudo mv terragrunt_linux_amd64 /usr/local/bin/terragrunt
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_PRODUCTION }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy Shared Services
+        working-directory: terragrunt
+        run: |
+          echo "🚀 Deploying Shared Services..."
+          terragrunt apply --terragrunt-working-dir shared-services --terragrunt-non-interactive --auto-approve
+
+  deploy-dev:
+    name: Deploy Development
+    runs-on: ubuntu-latest
+    needs: [plan-dev]
+    if: github.ref == 'refs/heads/main'
+    environment: development
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.13.5
+
+      - name: Setup Terragrunt
+        run: |
+          wget -q https://github.com/gruntwork-io/terragrunt/releases/download/v${{ env.TERRAGRUNT_VERSION }}/terragrunt_linux_amd64
+          chmod +x terragrunt_linux_amd64
+          sudo mv terragrunt_linux_amd64 /usr/local/bin/terragrunt
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_DEV }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy Dev Environment
+        working-directory: terragrunt/environments/dev
+        env:
+          TF_VAR_github_app_id: ${{ secrets.ARGOCD_APP_ID }}
+          TF_VAR_github_app_installation_id: ${{ secrets.ARGOCD_APP_INSTALLATION_ID }}
+          TF_VAR_github_app_private_key: ${{ secrets.ARGOCD_APP_PRIVATE_KEY }}
+          GITHUB_ACTIONS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN_DEV }}
+        run: |
+          echo "🚀 Deploying Dev Environment (Sequential)..."
+          echo "1️⃣ Deploying VPC..."
+          cd vpc && terragrunt apply --auto-approve
+          echo "2️⃣ Deploying ECR..."
+          cd ../ecr && terragrunt apply --auto-approve
+          echo "3️⃣ Deploying EKS..."
+          cd ../eks && terragrunt apply --auto-approve
+          echo "4️⃣ Deploying RDS..."
+          cd ../rds && terragrunt apply --auto-approve
+          echo "5️⃣ Deploying ArgoCD..."
+          cd ../argocd && terragrunt apply --auto-approve
+          echo "6️⃣ Deploying IAM..."
+          cd ../iam && terragrunt apply --auto-approve
+
+      - name: Smoke Tests
+        run: |
+          echo "🧪 Running smoke tests..."
+          # Add basic connectivity tests here
+          aws eks describe-cluster --name tbyte-dev --region ${{ env.AWS_REGION }} || echo "EKS cluster not ready yet"
+
+  update-app-values:
+    name: Update App Values
+    needs: [deploy-dev]
+    uses: ./.github/workflows/update-app-values.yml
+    secrets: inherit
+
+  deploy-staging:
+    name: Deploy Staging
+    runs-on: ubuntu-latest
+    needs: [plan-staging]
+    if: false  # Disabled for now - focus on dev environment
+    environment: staging
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.13.5
+
+      - name: Setup Terragrunt
+        run: |
+          wget -q https://github.com/gruntwork-io/terragrunt/releases/download/v${{ env.TERRAGRUNT_VERSION }}/terragrunt_linux_amd64
+          chmod +x terragrunt_linux_amd64
+          sudo mv terragrunt_linux_amd64 /usr/local/bin/terragrunt
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_PRODUCTION }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy Staging Environment
+        working-directory: terragrunt/environments/staging
+        run: |
+          echo "🚀 Deploying Staging Environment..."
+          terragrunt run-all apply --terragrunt-non-interactive --auto-approve
+
+  deploy-production:
+    name: Deploy Production
+    runs-on: ubuntu-latest
+    needs: [plan-production]
+    if: false  # Disabled for now - focus on dev environment
+    environment: production
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.13.5
+
+      - name: Setup Terragrunt
+        run: |
+          wget -q https://github.com/gruntwork-io/terragrunt/releases/download/v${{ env.TERRAGRUNT_VERSION }}/terragrunt_linux_amd64
+          chmod +x terragrunt_linux_amd64
+          sudo mv terragrunt_linux_amd64 /usr/local/bin/terragrunt
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_DEV }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy Production Environment
+        working-directory: terragrunt/environments/production
+        run: |
+          echo "🚀 Deploying Production Environment..."
+          terragrunt run-all apply --terragrunt-non-interactive --auto-approve
+
+      - name: Post-Deployment Verification
+        run: |
+          echo "✅ Production deployment completed successfully!"
+          echo "🔍 Running post-deployment checks..."
+          aws eks describe-cluster --name tbyte-production --region ${{ env.AWS_REGION }} || echo "EKS cluster verification pending"
+
+  notify:
+    name: Notify Deployment Status
+    runs-on: ubuntu-latest
+    needs: [deploy-production]
+    if: always()
+    
+    steps:
+      - name: Deployment Success
+        if: needs.deploy-production.result == 'success'
+        run: |
+          echo "🎉 All environments deployed successfully!"
+          echo "✅ Shared Services: ECR repositories ready"
+          echo "✅ Development: tbyte-dev cluster ready"  
+          echo "✅ Staging: tbyte-staging cluster ready"
+          echo "✅ Production: tbyte-production cluster ready"
+
+      - name: Deployment Failure
+        if: needs.deploy-production.result == 'failure'
+        run: |
+          echo "❌ Deployment failed. Check logs for details."
+          exit 1

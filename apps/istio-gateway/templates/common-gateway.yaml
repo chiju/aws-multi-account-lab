@@ -1,0 +1,41 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: common-gateway
+  namespace: istio-system
+spec:
+  selector:
+    istio: gateway  # Match actual pod label
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*.local"  # Wildcard for all .local domains
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: common-routes
+  namespace: istio-system
+spec:
+  hosts:
+  - grafana.local
+  - kiali.local
+  - jaeger.local
+  gateways:
+  - common-gateway
+  http:
+  # Grafana Route
+  - match:
+    - uri:
+        prefix: /
+      headers:
+        host:
+          exact: grafana.local
+    route:
+    - destination:
+        host: kube-prometheus-stack-grafana.monitoring.svc.cluster.local
+        port:
+          number: 80

@@ -1,0 +1,27 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ include "tbyte-microservices.fullname" . }}-gateway-vs
+  labels:
+    {{- include "tbyte-microservices.labels" . | nindent 4 }}
+spec:
+  gateways:
+  - istio-system/common-gateway
+  hosts:
+  - tbyte.local
+  http:
+  # Frontend Routes (Canary-enabled) - Only frontend routes for Argo Rollouts
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: {{ include "tbyte-microservices.fullname" . }}-frontend
+        port:
+          number: 80
+      weight: 100
+    - destination:
+        host: {{ include "tbyte-microservices.fullname" . }}-frontend-canary
+        port:
+          number: 80
+      weight: 0

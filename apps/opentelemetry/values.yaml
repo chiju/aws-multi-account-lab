@@ -1,0 +1,33 @@
+# OpenTelemetry Operator Configuration
+# Using official Helm chart from open-telemetry.github.io/opentelemetry-helm-charts
+
+opentelemetry-operator:
+  # Disable webhooks to avoid certificate issues
+  admissionWebhooks:
+    enabled: false
+    certManager:
+      enabled: false
+    autoGenerateCert:
+      enabled: false
+  
+  # Operator configuration
+  manager:
+    collectorImage:
+      repository: "otel/opentelemetry-collector-k8s"
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 50m
+        memory: 64Mi
+  
+  # Override namespace to match ArgoCD deployment target
+  namespaceOverride: "opentelemetry"
+
+# Disable default collector and instrumentation resources that require webhooks
+defaultCollector:
+  enabled: false
+
+defaultInstrumentation:
+  enabled: false

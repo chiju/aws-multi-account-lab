@@ -1,0 +1,35 @@
+{{- if .Values.frontend.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: {{ include "tbyte-microservices.fullname" . }}-frontend-analysis
+  labels:
+    {{- include "tbyte-microservices.labels" . | nindent 4 }}
+    app.kubernetes.io/component: frontend
+spec:
+  metrics:
+  - name: pod-ready-ratio
+    interval: 15s
+    count: 3
+    successCondition: result[0] >= 0.5
+    failureLimit: 2
+    provider:
+      prometheus:
+        address: http://monitoring-kube-prometheus-prometheus.monitoring:9090
+        query: |
+          (
+            sum(kube_pod_status_ready{condition="true",namespace="tbyte",pod=~"tbyte-microservices-frontend-.*"}) or vector(0)
+          ) / (
+            sum(kube_pod_status_ready{namespace="tbyte",pod=~"tbyte-microservices-frontend-.*"}) or vector(1)
+          )
+  - name: cpu-usage
+    interval: 15s
+    count: 3
+    successCondition: result[0] <= 0.9
+    failureLimit: 2
+    provider:
+      prometheus:
+        address: http://monitoring-kube-prometheus-prometheus.monitoring:9090
+        query: |
+          avg(rate(container_cpu_usage_seconds_total{namespace="tbyte",pod=~"tbyte-microservices-frontend-.*",container!="POD",container!=""}[1m])) or vector(0)
+{{- end }}
