@@ -78,7 +78,7 @@ resource "helm_release" "argocd_apps" {
   depends_on = [helm_release.argocd]
 }
 
-resource "kubernetes_secret" "argocd_repo" {
+resource "kubernetes_secret_v1" "argocd_repo" {
   count = var.github_app_id != "" ? 1 : 0
 
   metadata {
