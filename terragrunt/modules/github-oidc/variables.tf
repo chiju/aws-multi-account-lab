@@ -1,3 +1,9 @@
+variable "use_account_info" {
+  description = "Use account name and ID in role name"
+  type        = bool
+  default     = false
+}
+
 variable "role_name" {
   description = "Name of the GitHub Actions IAM role"
   type        = string

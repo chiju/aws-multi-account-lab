@@ -1,3 +1,6 @@
+# Get current account info
+data "aws_caller_identity" "current" {}
+
 # GitHub OIDC Provider
 resource "aws_iam_openid_connect_provider" "github" {
   url = "https://token.actions.githubusercontent.com"
@@ -12,7 +15,7 @@ resource "aws_iam_openid_connect_provider" "github" {
 
 # GitHub Actions Role
 resource "aws_iam_role" "github_actions" {
-  name = var.role_name
+  name = var.use_account_info ? "GitHubActionsRole-${var.environment}-${data.aws_caller_identity.current.account_id}" : var.role_name
   
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
