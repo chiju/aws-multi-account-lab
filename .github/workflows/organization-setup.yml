@@ -45,12 +45,12 @@ jobs:
       - name: Plan Organization
         if: github.event.inputs.action == 'plan'
         working-directory: terragrunt/organization/01-organization
-        run: terragrunt run-all plan --non-interactive
+        run: terragrunt plan --all --non-interactive
 
       - name: Apply Organization
         if: github.event.inputs.action == 'apply'
         working-directory: terragrunt/organization/01-organization
-        run: terragrunt run-all apply --non-interactive --auto-approve
+        run: terragrunt apply --all --non-interactive --auto-approve
 
       - name: Get Account IDs
         if: github.event.inputs.action == 'apply'
@@ -64,4 +64,4 @@ jobs:
       - name: Destroy Organization
         if: github.event.inputs.action == 'destroy'
         working-directory: terragrunt/organization/01-organization
-        run: terragrunt run-all destroy --non-interactive --auto-approve
+        run: terragrunt destroy --all --non-interactive --auto-approve
