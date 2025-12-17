@@ -8,7 +8,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/chiju/tbyte.git
+    repoURL: https://github.com/chiju/aws-multi-account-lab.git
     targetRevision: main
     path: apps/karpenter
   destination:
