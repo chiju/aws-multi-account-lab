@@ -30,3 +30,9 @@ variable "parent_id" {
   description = "Parent organizational unit ID"
   type        = string
 }
+
+variable "tags" {
+  description = "Tags to apply to the AWS account"
+  type        = map(string)
+  default     = {}
+}
