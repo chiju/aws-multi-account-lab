@@ -41,7 +41,6 @@ jobs:
         with:
           node-version: '24'
           cache: 'npm'
-          cache-dependency-path: x_clone/package.json
 
       - name: Test & Security Scan
         run: |
