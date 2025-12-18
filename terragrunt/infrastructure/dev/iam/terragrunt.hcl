@@ -20,7 +20,7 @@ dependency "rds" {
   config_path = "../rds"
   
   mock_outputs = {
-    rds_secret_arn = "arn:aws:secretsmanager:eu-central-1:575491070504:secret:mock-secret"
+    secret_arn = "arn:aws:secretsmanager:eu-central-1:575491070504:secret:mock-secret"
   }
   mock_outputs_allowed_terraform_commands = ["plan", "validate"]
 }
