@@ -9,4 +9,6 @@ include "root" {
 inputs = {
   cluster_name = "tbyte-dev"
   environment  = "dev"
+  aws_region   = "eu-central-1"
+  project      = "x-clone"
 }
