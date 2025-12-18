@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --text-gray: #6b7280;
+    --text-gray-light: #9ca3af;
+    --border-gray: #374151;
+    --input-gray: #1f2937;
+    --icon-blue: #3b82f6;
+    --icon-pink: #ec4899;
+    --icon-green: #10b981;
+  }
+}
+
+@layer utilities {
+  .text-textGray { color: var(--text-gray); }
+  .text-textGrayLight { color: var(--text-gray-light); }
+  .border-borderGray { border-color: var(--border-gray); }
+  .bg-inputGray { background-color: var(--input-gray); }
+  .text-iconBlue { color: var(--icon-blue); }
+  .bg-iconBlue { background-color: var(--icon-blue); }
+  .text-iconPink { color: var(--icon-pink); }
+  .bg-iconPink { background-color: var(--icon-pink); }
+  .text-iconGreen { color: var(--icon-green); }
+  .bg-iconGreen { background-color: var(--icon-green); }
+}
+
+@media (min-width: 480px) {
+  .xsm\:px-4 { padding-left: 1rem; padding-right: 1rem; }
+}
+
+@media (min-width: 1024px) {
+  .lg\:max-w-screen-5xl { max-width: 64rem; }
+  .lg\:min-w-\[600px\] { min-width: 600px; }
+  .lg\:flex { display: flex; }
+}
+
+@media (min-width: 1280px) {
+  .xl\:max-w-screen-7xl { max-width: 80rem; }
+}
+
+@media (min-width: 1600px) {
+  .xxl\:px-8 { padding-left: 2rem; padding-right: 2rem; }
+  .xxl\:max-w-screen-xxl { max-width: 1600px; }
+}
+
+body {
+  background: black;
+  color: #ededed;
+  font-family: Arial, Helvetica, sans-serif;
+}
