@@ -41,6 +41,7 @@ jobs:
           echo "cluster_name=$(terragrunt output -raw cluster_name)" >> $GITHUB_OUTPUT
           echo "cluster_endpoint=$(terragrunt output -raw cluster_endpoint)" >> $GITHUB_OUTPUT
           echo "karpenter_role_arn=$(terragrunt output -raw karpenter_controller_role_arn)" >> $GITHUB_OUTPUT
+          echo "karpenter_node_role=$(terragrunt output -raw karpenter_node_role_name)" >> $GITHUB_OUTPUT
           
           cd ../iam
           terragrunt init --non-interactive
