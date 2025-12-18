@@ -20,14 +20,8 @@ data:
     <body>
         <div class="container">
             <h1>TByte Microservices Platform</h1>
-            <p>Production-ready microservices on AWS EKS with GitOps - Version 1.4.0 CANARY TEST</p>
-            <p><small>Updated: 2025-12-15 11:06 UTC</small></p>
-            
-            <!-- Broken HTML that will cause readiness probe failures -->
-            <script>
-                // This will cause the page to fail loading
-                throw new Error("Intentional error to test rollback");
-            </script>
+            <p>Production-ready microservices on AWS EKS with GitOps - Version 1.5.0 STABLE</p>
+            <p><small>Updated: 2025-12-18 09:05 UTC</small></p>
             
             <div id="status" class="status">
                 <p>Checking backend connection...</p>
