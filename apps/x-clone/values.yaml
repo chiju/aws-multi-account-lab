@@ -1,0 +1,27 @@
+replicaCount: 2
+
+image:
+  repository: 083777493764.dkr.ecr.eu-central-1.amazonaws.com/x-clone
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  port: 80
+
+secrets:
+  awsSecretName: tbyte-dev-x-clone-secrets
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
