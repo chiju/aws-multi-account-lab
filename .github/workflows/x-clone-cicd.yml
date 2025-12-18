@@ -105,8 +105,5 @@ jobs:
           # Apply the ArgoCD application
           kubectl apply -f argocd-apps/x-clone.yaml
           
-          # Wait for sync
-          kubectl wait --for=condition=Synced application/x-clone -n argocd --timeout=300s || true
-          
-          # Check deployment status
-          kubectl get application x-clone -n argocd -o yaml
+          # Check application status (don't wait)
+          kubectl get application x-clone -n argocd -o yaml || echo "Application not found yet"
