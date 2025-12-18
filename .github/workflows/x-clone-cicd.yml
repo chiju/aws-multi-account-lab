@@ -71,7 +71,7 @@ jobs:
       - name: Build and Push X Clone Image
         working-directory: x_clone
         run: |
-          # Build the Docker image
+          # Build the Docker image with specific tag
           docker build -t $ECR_REGISTRY/$IMAGE_NAME:$GITHUB_SHA .
           docker build -t $ECR_REGISTRY/$IMAGE_NAME:latest .
           
@@ -79,31 +79,35 @@ jobs:
           docker push $ECR_REGISTRY/$IMAGE_NAME:$GITHUB_SHA
           docker push $ECR_REGISTRY/$IMAGE_NAME:latest
           
-          echo "IMAGE_URI=$ECR_REGISTRY/$IMAGE_NAME:$GITHUB_SHA" >> $GITHUB_OUTPUT
+          echo "IMAGE_TAG=$GITHUB_SHA" >> $GITHUB_OUTPUT
 
   deploy:
-    name: Deploy X Clone
+    name: GitOps Deployment
     runs-on: ubuntu-latest
     needs: build-and-push
     
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN_DEV }}
-          aws-region: ${{ env.AWS_REGION }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Update kubeconfig
+      - name: Update Helm Values
         run: |
-          aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name tbyte-dev
+          # Update x-clone with new image tag and repository URL
+          sed -i "s|repository: .*x-clone|repository: ${{ env.ECR_REGISTRY }}/${{ env.IMAGE_NAME }}|g" apps/x-clone/values.yaml
+          sed -i "s|tag: \".*\"|tag: \"${{ needs.build-and-push.outputs.IMAGE_TAG }}\"|g" apps/x-clone/values.yaml
 
-      - name: Deploy X Clone via ArgoCD
+      - name: Commit & Push GitOps Changes
         run: |
-          # Apply the ArgoCD application
-          kubectl apply -f argocd-apps/x-clone.yaml
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
           
-          # Check application status (don't wait)
-          kubectl get application x-clone -n argocd -o yaml || echo "Application not found yet"
+          git add apps/x-clone/values.yaml
+          git commit -m "🚀 Deploy X Clone ${{ needs.build-and-push.outputs.IMAGE_TAG }} via ArgoCD
+          
+          - Update image tag to ${{ needs.build-and-push.outputs.IMAGE_TAG }}
+          - Repository: ${{ env.ECR_REGISTRY }}/${{ env.IMAGE_NAME }}
+          - Trigger ArgoCD sync for deployment" || exit 0
+          
+          git push
