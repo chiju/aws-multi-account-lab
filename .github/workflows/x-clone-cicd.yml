@@ -1,0 +1,89 @@
+name: X Clone CI/CD Pipeline
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, develop]
+    paths: 
+      - 'x_clone/**'
+      - 'apps/x-clone/**'
+      - '.github/workflows/x-clone-cicd.yml'
+  pull_request:
+    branches: [main]
+    paths: 
+      - 'x_clone/**'
+      - 'apps/x-clone/**'
+      - '.github/workflows/x-clone-cicd.yml'
+
+env:
+  AWS_REGION: eu-central-1
+  ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID_DEV }}.dkr.ecr.eu-central-1.amazonaws.com
+  IMAGE_NAME: x-clone
+
+permissions:
+  id-token: write
+  contents: write
+  deployments: write
+  security-events: write
+
+jobs:
+  build-and-push:
+    name: Build and Push X Clone
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_DEV }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and Push X Clone Image
+        working-directory: x_clone
+        run: |
+          # Build the Docker image
+          docker build -t $ECR_REGISTRY/$IMAGE_NAME:$GITHUB_SHA .
+          docker build -t $ECR_REGISTRY/$IMAGE_NAME:latest .
+          
+          # Push the Docker image
+          docker push $ECR_REGISTRY/$IMAGE_NAME:$GITHUB_SHA
+          docker push $ECR_REGISTRY/$IMAGE_NAME:latest
+          
+          echo "IMAGE_URI=$ECR_REGISTRY/$IMAGE_NAME:$GITHUB_SHA" >> $GITHUB_OUTPUT
+
+  deploy:
+    name: Deploy X Clone
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_DEV }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name tbyte-dev
+
+      - name: Deploy X Clone via ArgoCD
+        run: |
+          # Apply the ArgoCD application
+          kubectl apply -f argocd-apps/x-clone.yaml
+          
+          # Wait for sync
+          kubectl wait --for=condition=Synced application/x-clone -n argocd --timeout=300s || true
+          
+          # Check deployment status
+          kubectl get application x-clone -n argocd -o yaml

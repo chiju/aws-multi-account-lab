@@ -1,13 +1,19 @@
-name: Application CI/CD Pipeline
+name: TByte Application CI/CD Pipeline
 
 on:
   workflow_dispatch:
   push:
     branches: [main, develop]
-    paths: ['src/**', 'apps/**', '.github/workflows/app-cicd.yml']
+    paths: 
+      - 'src/**'
+      - 'apps/tbyte-microservices/**'
+      - '.github/workflows/app-cicd.yml'
   pull_request:
     branches: [main]
-    paths: ['src/**', 'apps/**', '.github/workflows/app-cicd.yml']
+    paths: 
+      - 'src/**'
+      - 'apps/tbyte-microservices/**'
+      - '.github/workflows/app-cicd.yml'
 
 env:
   AWS_REGION: eu-central-1
