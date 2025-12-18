@@ -26,7 +26,8 @@ locals {
 
   rds_secret_arn = var.rds_secret_arn != null ? var.rds_secret_arn : (length(data.aws_secretsmanager_secret.rds_secret) > 0 ? data.aws_secretsmanager_secret.rds_secret[0].arn : "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:mock-secret")
   
-  x_clone_secret_arn = length(data.aws_secretsmanager_secret.x_clone_secret) > 0 ? data.aws_secretsmanager_secret.x_clone_secret[0].arn : "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:mock-x-clone-secret"
+  x_clone_secret_arn = try(data.aws_secretsmanager_secret.x_clone_secret[0].arn, "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:mock-x-clone-secret")
+}
 }
 
 # IRSA Role for Backend Service
