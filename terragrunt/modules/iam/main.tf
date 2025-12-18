@@ -28,7 +28,6 @@ locals {
   
   x_clone_secret_arn = try(data.aws_secretsmanager_secret.x_clone_secret[0].arn, "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:mock-x-clone-secret")
 }
-}
 
 # IRSA Role for Backend Service
 resource "aws_iam_role" "backend_service_role" {
