@@ -1,5 +1,5 @@
 include "root" {
-  path = find_in_parent_folders("management-root.hcl")
+  path = find_in_parent_folders("management-oidc-root.hcl")
 }
 
 terraform {
