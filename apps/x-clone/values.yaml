@@ -3,7 +3,7 @@ replicaCount: 2
 image:
   repository: 575491070504.dkr.ecr.eu-central-1.amazonaws.com/x-clone
   pullPolicy: IfNotPresent
-  tag: ""
+  tag: "d1b56a8d6da55856a21fbafa2d76b4ef3f39d5cf"
 
 service:
   type: ClusterIP
