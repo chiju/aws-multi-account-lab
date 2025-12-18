@@ -3,7 +3,7 @@ kind: EC2NodeClass
 metadata:
   name: default
 spec:
-  role: 
+  role: tbyte-dev-node-group-role
   amiSelectorTerms:
     - alias: al2023@latest
   subnetSelectorTerms:
