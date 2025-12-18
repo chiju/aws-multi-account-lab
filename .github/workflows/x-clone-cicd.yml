@@ -95,7 +95,7 @@ jobs:
       - name: Update Helm Values
         run: |
           # Update x-clone with new image tag and repository URL
-          sed -i "s|repository: .*x-clone|repository: ${{ env.ECR_REGISTRY }}/${{ env.IMAGE_NAME }}|g" apps/x-clone/values.yaml
+          sed -i "s|repository: .*|repository: ${{ env.ECR_REGISTRY }}/${{ env.IMAGE_NAME }}|g" apps/x-clone/values.yaml
           sed -i "s|tag: \".*\"|tag: \"${{ needs.build-and-push.outputs.IMAGE_TAG }}\"|g" apps/x-clone/values.yaml
 
       - name: Commit & Push GitOps Changes
