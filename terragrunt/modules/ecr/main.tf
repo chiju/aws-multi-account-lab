@@ -4,6 +4,7 @@
 resource "aws_ecr_repository" "frontend" {
   name                 = "${var.cluster_name}-frontend"
   image_tag_mutability = "MUTABLE"
+  force_delete         = true
 
   image_scanning_configuration {
     scan_on_push = true
@@ -25,6 +26,7 @@ resource "aws_ecr_repository" "frontend" {
 resource "aws_ecr_repository" "backend" {
   name                 = "${var.cluster_name}-backend"
   image_tag_mutability = "MUTABLE"
+  force_delete         = true
 
   image_scanning_configuration {
     scan_on_push = true
@@ -46,6 +48,7 @@ resource "aws_ecr_repository" "backend" {
 resource "aws_ecr_repository" "x_clone" {
   name                 = "x-clone"
   image_tag_mutability = "MUTABLE"
+  force_delete         = true
 
   image_scanning_configuration {
     scan_on_push = true
