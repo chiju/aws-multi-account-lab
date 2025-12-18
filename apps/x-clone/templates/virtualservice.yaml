@@ -1,0 +1,20 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ include "x-clone.fullname" . }}-vs
+  labels:
+    {{- include "x-clone.labels" . | nindent 4 }}
+spec:
+  gateways:
+  - istio-system/common-gateway
+  hosts:
+  - x-clone.local
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: {{ include "x-clone.fullname" . }}
+        port:
+          number: 80
