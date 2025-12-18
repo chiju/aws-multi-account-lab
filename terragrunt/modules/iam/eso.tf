@@ -44,7 +44,7 @@ resource "aws_iam_role_policy" "eso_secrets_policy" {
         ]
         Resource = [
           local.rds_secret_arn,
-          "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.cluster_name}-x-clone-secrets-*"
+          local.x_clone_secret_arn
         ]
       }
     ]
