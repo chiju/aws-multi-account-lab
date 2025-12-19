@@ -10,17 +10,3 @@ istiod:
   pilot:
     env:
       EXTERNAL_ISTIOD: false
-
-# Mesh configuration for tracing
-meshConfig:
-  defaultConfig:
-    tracing:
-      sampling: 100.0
-  defaultProviders:
-    tracing:
-    - jaeger
-  extensionProviders:
-  - name: jaeger
-    envoyOtelAls:
-      service: jaeger-collector.jaeger.svc.cluster.local
-      port: 4317

@@ -7,3 +7,27 @@ spec:
   tracing:
   - providers:
     - name: jaeger
+  - randomSamplingPercentage: 100.0
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: istio
+  namespace: istio-system
+data:
+  mesh: |
+    defaultConfig:
+      discoveryAddress: istiod.istio-system.svc:15012
+    defaultProviders:
+      metrics:
+      - prometheus
+      tracing:
+      - jaeger
+    enablePrometheusMerge: true
+    extensionProviders:
+    - name: jaeger
+      envoyOtelAls:
+        service: jaeger-collector.jaeger.svc.cluster.local
+        port: 4317
+    rootNamespace: istio-system
+    trustDomain: cluster.local
