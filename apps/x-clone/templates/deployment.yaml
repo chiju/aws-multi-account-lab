@@ -11,6 +11,8 @@ spec:
       {{- include "x-clone.selectorLabels" . | nindent 6 }}
   template:
     metadata:
+      annotations:
+        instrumentation.opentelemetry.io/inject-nodejs: "opentelemetry/nodejs-instrumentation"
       labels:
         {{- include "x-clone.selectorLabels" . | nindent 8 }}
     spec:
