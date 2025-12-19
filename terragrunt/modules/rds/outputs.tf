@@ -41,12 +41,12 @@ output "db_subnet_group_name" {
 
 output "secrets_manager_secret_arn" {
   description = "ARN of the AWS-managed Secrets Manager secret containing database credentials"
-  value       = aws_db_instance.postgres.master_user_secret[0].secret_arn
+  value       = length(aws_db_instance.postgres.master_user_secret) > 0 ? aws_db_instance.postgres.master_user_secret[0].secret_arn : null
 }
 
 output "secrets_manager_secret_name" {
   description = "Name of the AWS-managed Secrets Manager secret containing database credentials"
-  value       = split("/", aws_db_instance.postgres.master_user_secret[0].secret_arn)[6]
+  value       = length(aws_db_instance.postgres.master_user_secret) > 0 ? split("/", aws_db_instance.postgres.master_user_secret[0].secret_arn)[6] : null
 }
 
 # Connection string for applications (without password for security)
@@ -57,11 +57,11 @@ output "connection_info" {
     port       = aws_db_instance.postgres.port
     database   = aws_db_instance.postgres.db_name
     username   = aws_db_instance.postgres.username
-    secret_arn = aws_db_instance.postgres.master_user_secret[0].secret_arn
+    secret_arn = length(aws_db_instance.postgres.master_user_secret) > 0 ? aws_db_instance.postgres.master_user_secret[0].secret_arn : null
   }
 }
 
 output "secret_arn" {
   description = "ARN of the AWS-managed RDS password secret in AWS Secrets Manager"
-  value       = aws_db_instance.postgres.master_user_secret[0].secret_arn
+  value       = length(aws_db_instance.postgres.master_user_secret) > 0 ? aws_db_instance.postgres.master_user_secret[0].secret_arn : null
 }

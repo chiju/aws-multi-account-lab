@@ -56,11 +56,13 @@ resource "aws_security_group" "postgres" {
 
 # Use AWS-managed RDS master user secret
 data "aws_secretsmanager_secret" "postgres_password" {
-  arn = aws_db_instance.postgres.master_user_secret[0].secret_arn
+  count = length(aws_db_instance.postgres.master_user_secret) > 0 ? 1 : 0
+  arn   = aws_db_instance.postgres.master_user_secret[0].secret_arn
 }
 
 data "aws_secretsmanager_secret_version" "postgres_password" {
-  secret_id = data.aws_secretsmanager_secret.postgres_password.id
+  count     = length(aws_db_instance.postgres.master_user_secret) > 0 ? 1 : 0
+  secret_id = data.aws_secretsmanager_secret.postgres_password[0].id
 }
 
 # Parameter group to disable SSL for development
