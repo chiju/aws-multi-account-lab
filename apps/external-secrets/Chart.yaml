@@ -1,6 +1,6 @@
 apiVersion: v2
 name: external-secrets
-description: External Secrets Operator for AWS Secrets Manager integration
+description: External Secrets Operator for AWS Secrets Manager integration (v1.1.1)
 type: application
 version: 0.1.0
 appVersion: "v1.1.1"
