@@ -43,9 +43,9 @@ resource "aws_iam_role_policy" "eso_secrets_policy" {
           "secretsmanager:DescribeSecret"
         ]
         Resource = [
-          local.rds_secret_arn,
-          local.x_clone_secret_arn,
-          local.grafana_secret_arn
+          "${local.rds_secret_arn}*",
+          "${local.x_clone_secret_arn}*",
+          "${local.grafana_secret_arn}*"
         ]
       }
     ]
