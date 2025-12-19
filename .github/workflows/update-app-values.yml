@@ -49,7 +49,7 @@ jobs:
           
           cd ../rds
           terragrunt init --non-interactive
-          echo "rds_secret_name=$(terragrunt output -raw secrets_manager_secret_name)" >> $GITHUB_OUTPUT
+          echo "rds_secret_arn=$(terragrunt output -raw secrets_manager_secret_arn)" >> $GITHUB_OUTPUT
       
       - name: Update Karpenter values.yaml
         run: |
@@ -97,7 +97,7 @@ jobs:
       
       - name: Update RDS External Secret
         run: |
-          sed -i "s|key: .*|key: ${{ steps.terraform.outputs.rds_secret_name }}|g" apps/external-secrets/templates/rds-external-secret.yaml
+          sed -i "s|key: .*|key: ${{ steps.terraform.outputs.rds_secret_arn }}|g" apps/external-secrets/templates/rds-external-secret.yaml
       
       - name: Commit and Push
         run: |
