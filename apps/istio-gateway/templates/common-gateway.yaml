@@ -22,6 +22,8 @@ metadata:
 spec:
   hosts:
   - grafana.local
+  - argocd.local
+  - prometheus.local
   - kiali.local
   - jaeger.local
   gateways:
@@ -39,3 +41,27 @@ spec:
         host: kube-prometheus-stack-grafana.monitoring.svc.cluster.local
         port:
           number: 80
+  # ArgoCD Route
+  - match:
+    - uri:
+        prefix: /
+      headers:
+        host:
+          exact: argocd.local
+    route:
+    - destination:
+        host: argocd-server.argocd.svc.cluster.local
+        port:
+          number: 80
+  # Prometheus Route
+  - match:
+    - uri:
+        prefix: /
+      headers:
+        host:
+          exact: prometheus.local
+    route:
+    - destination:
+        host: monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local
+        port:
+          number: 9090
