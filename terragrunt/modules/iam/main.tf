@@ -9,19 +9,21 @@ data "aws_eks_cluster" "cluster" {
 
 # Look up RDS secret by name if not provided - skip during plan and when using AWS-managed passwords
 data "aws_secretsmanager_secret" "rds_secret" {
-  count = false ? 1 : 0  # Disabled - now using AWS-managed RDS passwords
+  count = false ? 1 : 0 # Disabled - now using AWS-managed RDS passwords
   name  = "${var.cluster_name}-postgres-password"
 }
 
 # Look up X Clone secret by name - conditional for apply vs destroy
+# Skip during destroy to avoid dependency issues
 data "aws_secretsmanager_secret" "x_clone_secret" {
-  count = var.cluster_oidc_issuer_url != null && !can(regex("(?i)mock", var.cluster_oidc_issuer_url)) ? 1 : 0
+  count = var.cluster_oidc_issuer_url != null && !can(regex("(?i)mock", var.cluster_oidc_issuer_url)) && !var.skip_secret_lookup ? 1 : 0
   name  = "${var.cluster_name}-x-clone-secrets"
 }
 
-# Look up Grafana secret by name - conditional for apply vs destroy
+# Look up Grafana secret by name - conditional for apply vs destroy  
+# Skip during destroy to avoid dependency issues
 data "aws_secretsmanager_secret" "grafana_secret" {
-  count = var.cluster_oidc_issuer_url != null && !can(regex("(?i)mock", var.cluster_oidc_issuer_url)) ? 1 : 0
+  count = var.cluster_oidc_issuer_url != null && !can(regex("(?i)mock", var.cluster_oidc_issuer_url)) && !var.skip_secret_lookup ? 1 : 0
   name  = "${var.cluster_name}-grafana-admin"
 }
 
@@ -31,10 +33,11 @@ locals {
   oidc_issuer_url = var.cluster_oidc_issuer_url == null || can(regex("MOCK", var.cluster_oidc_issuer_url)) ? (length(data.aws_eks_cluster.cluster) > 0 ? replace(data.aws_eks_cluster.cluster[0].identity[0].oidc[0].issuer, "https://", "") : "mock-oidc-issuer") : replace(var.cluster_oidc_issuer_url, "https://", "")
 
   rds_secret_arn = var.rds_secret_arn != null ? var.rds_secret_arn : (length(data.aws_secretsmanager_secret.rds_secret) > 0 ? data.aws_secretsmanager_secret.rds_secret[0].arn : "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:mock-secret")
-  
-  x_clone_secret_arn = length(data.aws_secretsmanager_secret.x_clone_secret) > 0 ? data.aws_secretsmanager_secret.x_clone_secret[0].arn : "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:mock-x-clone-secret"
-  
-  grafana_secret_arn = length(data.aws_secretsmanager_secret.grafana_secret) > 0 ? data.aws_secretsmanager_secret.grafana_secret[0].arn : "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:mock-grafana-secret"
+
+  # Use fallback ARNs when skip_secret_lookup is true or data sources are not available
+  x_clone_secret_arn = length(data.aws_secretsmanager_secret.x_clone_secret) > 0 ? data.aws_secretsmanager_secret.x_clone_secret[0].arn : "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.cluster_name}-x-clone-secrets-XXXXXX"
+
+  grafana_secret_arn = length(data.aws_secretsmanager_secret.grafana_secret) > 0 ? data.aws_secretsmanager_secret.grafana_secret[0].arn : "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.cluster_name}-grafana-admin-XXXXXX"
 }
 
 # IRSA Role for Backend Service

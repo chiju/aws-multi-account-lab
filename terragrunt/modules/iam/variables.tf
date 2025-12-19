@@ -50,3 +50,9 @@ variable "project" {
   type        = string
   default     = "tbyte"
 }
+
+variable "skip_secret_lookup" {
+  description = "Skip looking up secrets (useful during destroy operations)"
+  type        = bool
+  default     = false
+}

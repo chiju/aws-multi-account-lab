@@ -52,6 +52,8 @@ jobs:
       - name: Destroy All Infrastructure
         working-directory: terragrunt/infrastructure/dev
         run: terragrunt destroy --all --auto-approve --non-interactive
+        env:
+          TF_VAR_skip_secret_lookup: "true"
 
       - name: Cleanup Orphaned Resources
         run: |
