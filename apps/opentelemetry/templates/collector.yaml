@@ -24,7 +24,7 @@ spec:
       debug:
         verbosity: basic
       otlp:
-        endpoint: http://jaeger-jaeger.jaeger.svc.cluster.local:14317
+        endpoint: http://jaeger-collector.jaeger.svc.cluster.local:4317
         tls:
           insecure: true
     
