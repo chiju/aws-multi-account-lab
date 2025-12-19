@@ -58,6 +58,7 @@ resource "aws_security_group" "postgres" {
 resource "random_password" "postgres_password" {
   length  = 16
   special = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
 # Parameter group to disable SSL for development
