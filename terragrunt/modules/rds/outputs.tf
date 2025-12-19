@@ -46,7 +46,7 @@ output "secrets_manager_secret_arn" {
 
 output "secrets_manager_secret_name" {
   description = "Name of the AWS-managed Secrets Manager secret containing database credentials"
-  value       = length(aws_db_instance.postgres.master_user_secret) > 0 ? split("/", aws_db_instance.postgres.master_user_secret[0].secret_arn)[6] : null
+  value       = length(aws_db_instance.postgres.master_user_secret) > 0 ? split(":", aws_db_instance.postgres.master_user_secret[0].secret_arn)[6] : null
 }
 
 # Connection string for applications (without password for security)
