@@ -26,7 +26,10 @@ kube-prometheus-stack:
           release: monitoring
   grafana:
     enabled: true
-    adminPassword: admin
+    admin:
+      existingSecret: grafana-admin-secret
+      userKey: admin-user
+      passwordKey: admin-password
     # Persistent storage for Grafana dashboards
     persistence:
       enabled: true
