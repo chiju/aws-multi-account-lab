@@ -1,15 +1,9 @@
 # OpenTelemetry Operator Configuration
-# Using official Helm chart
-
-opentelemetry-operator:
-  admissionWebhooks:
-    enabled: false
-  
-  manager:
-    resources:
-      limits:
-        cpu: 100m
-        memory: 128Mi
-      requests:
-        cpu: 50m
-        memory: 64Mi
+manager:
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
