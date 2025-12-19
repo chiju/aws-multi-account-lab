@@ -13,12 +13,11 @@ data "aws_secretsmanager_secret" "rds_secret" {
   name  = "${var.cluster_name}-postgres-password"
 }
 
-# Look up X Clone secret by name - skip during plan
-# Commented out to prevent destroy failures when secret is already deleted
-# data "aws_secretsmanager_secret" "x_clone_secret" {
-#   count = var.cluster_oidc_issuer_url != null && !can(regex("(?i)mock", var.cluster_oidc_issuer_url)) ? 1 : 0
-#   name  = "${var.cluster_name}-x-clone-secrets"
-# }
+# Look up X Clone secret by name - conditional for apply vs destroy
+data "aws_secretsmanager_secret" "x_clone_secret" {
+  count = var.cluster_oidc_issuer_url != null && !can(regex("(?i)mock", var.cluster_oidc_issuer_url)) ? 1 : 0
+  name  = "${var.cluster_name}-x-clone-secrets"
+}
 
 data "aws_caller_identity" "current" {}
 
@@ -27,7 +26,8 @@ locals {
 
   rds_secret_arn = var.rds_secret_arn != null ? var.rds_secret_arn : (length(data.aws_secretsmanager_secret.rds_secret) > 0 ? data.aws_secretsmanager_secret.rds_secret[0].arn : "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:mock-secret")
   
-  x_clone_secret_arn = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:mock-x-clone-secret"
+  x_clone_secret_arn = length(data.aws_secretsmanager_secret.x_clone_secret) > 0 ? data.aws_secretsmanager_secret.x_clone_secret[0].arn : "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:mock-x-clone-secret"
+}
 }
 
 # IRSA Role for Backend Service
