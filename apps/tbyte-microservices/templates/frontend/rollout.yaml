@@ -42,6 +42,7 @@ spec:
         app.kubernetes.io/component: frontend
       annotations:
         instrumentation.opentelemetry.io/inject-nodejs: "tbyte/tbyte-instrumentation"
+        instrumentation.opentelemetry.io/otel-service-name: "tbyte-frontend"
     spec:
       securityContext:
         runAsNonRoot: true

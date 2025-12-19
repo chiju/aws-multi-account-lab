@@ -21,6 +21,7 @@ spec:
         app.kubernetes.io/component: backend
       annotations:
         instrumentation.opentelemetry.io/inject-nodejs: "tbyte/tbyte-instrumentation"
+        instrumentation.opentelemetry.io/otel-service-name: "tbyte-backend"
     spec:
       serviceAccountName: {{ include "tbyte-microservices.fullname" . }}-backend
       securityContext:
