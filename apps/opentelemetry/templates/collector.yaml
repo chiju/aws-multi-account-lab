@@ -1,12 +1,10 @@
-apiVersion: opentelemetry.io/v1beta1
+apiVersion: opentelemetry.io/v1alpha1
 kind: OpenTelemetryCollector
 metadata:
-  name: tbyte-collector
+  name: otel-collector
   namespace: opentelemetry
 spec:
-  mode: deployment
-  replicas: 2
-  config:
+  config: |
     receivers:
       otlp:
         protocols:
@@ -17,51 +15,20 @@ spec:
     
     processors:
       batch:
-        timeout: 1s
-        send_batch_size: 1024
-      memory_limiter:
-        limit_mib: 512
     
     exporters:
-      jaeger:
-        endpoint: jaeger-collector.monitoring.svc.cluster.local:14250
-        tls:
-          insecure: true
-      
       prometheus:
         endpoint: "0.0.0.0:8889"
-        namespace: otel
-      
       logging:
-        loglevel: info
+        loglevel: debug
     
     service:
       pipelines:
         traces:
           receivers: [otlp]
-          processors: [memory_limiter, batch]
-          exporters: [jaeger, logging]
+          processors: [batch]
+          exporters: [logging]
         metrics:
           receivers: [otlp]
-          processors: [memory_limiter, batch]
+          processors: [batch]
           exporters: [prometheus, logging]
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: tbyte-collector
-  namespace: opentelemetry
-spec:
-  selector:
-    app.kubernetes.io/name: tbyte-collector
-  ports:
-  - name: otlp-grpc
-    port: 4317
-    targetPort: 4317
-  - name: otlp-http
-    port: 4318
-    targetPort: 4318
-  - name: prometheus
-    port: 8889
-    targetPort: 8889
