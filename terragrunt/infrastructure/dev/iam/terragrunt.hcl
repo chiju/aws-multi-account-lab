@@ -31,6 +31,6 @@ inputs = {
   cluster_name            = dependency.eks.outputs.cluster_name
   cluster_oidc_issuer_url = dependency.eks.outputs.cluster_oidc_issuer_url
   
-  # RDS secret ARN from RDS module
-  rds_secret_arn = dependency.rds.outputs.secret_arn
+  # RDS secret ARN from RDS module (can be null)
+  rds_secret_arn = try(dependency.rds.outputs.secret_arn, null)
 }
