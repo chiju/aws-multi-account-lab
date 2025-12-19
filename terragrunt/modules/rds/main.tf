@@ -54,11 +54,13 @@ resource "aws_security_group" "postgres" {
   }
 }
 
-# Random password for database
-resource "random_password" "postgres_password" {
-  length  = 16
-  special = true
-  override_special = "!#$%&*()-_=+[]{}<>:?"
+# Use AWS-managed RDS master user secret
+data "aws_secretsmanager_secret" "postgres_password" {
+  arn = aws_db_instance.postgres.master_user_secret[0].secret_arn
+}
+
+data "aws_secretsmanager_secret_version" "postgres_password" {
+  secret_id = data.aws_secretsmanager_secret.postgres_password.id
 }
 
 # Parameter group to disable SSL for development
@@ -78,31 +80,6 @@ resource "aws_db_parameter_group" "postgres" {
   }
 }
 
-# Store password in AWS Secrets Manager
-resource "aws_secretsmanager_secret" "postgres_password" {
-  name                    = "${var.cluster_name}-postgres-password"
-  description             = "PostgreSQL password for ${var.cluster_name}"
-  recovery_window_in_days = 0
-
-  tags = {
-    Name        = "${var.cluster_name}-postgres-password"
-    Environment = var.environment
-    ManagedBy   = "terraform"
-  }
-}
-
-resource "aws_secretsmanager_secret_version" "postgres_password" {
-  secret_id = aws_secretsmanager_secret.postgres_password.id
-  secret_string = jsonencode({
-    username = var.db_username
-    password = random_password.postgres_password.result
-    engine   = "postgres"
-    host     = aws_db_instance.postgres.address
-    port     = aws_db_instance.postgres.port
-    dbname   = aws_db_instance.postgres.db_name
-  })
-}
-
 # RDS PostgreSQL Instance
 resource "aws_db_instance" "postgres" {
   identifier = "${var.cluster_name}-postgres"
@@ -115,7 +92,8 @@ resource "aws_db_instance" "postgres" {
   # Database configuration
   db_name  = var.db_name
   username = var.db_username
-  password = random_password.postgres_password.result
+  manage_master_user_password = true
+  master_user_secret_kms_key_id = null  # Uses default AWS managed key
 
   # Storage configuration
   allocated_storage     = var.allocated_storage
