@@ -21,6 +21,7 @@ resource "helm_release" "argocd" {
       }
       server = {
         replicas = 2
+        extraArgs = ["--insecure"]
       }
       repoServer = {
         replicas = 2
@@ -32,6 +33,9 @@ resource "helm_release" "argocd" {
         cm = {
           "timeout.reconciliation" = "5s"
         }
+      }
+      server = {
+        extraArgs = ["--insecure"]
       }
     })
   ]
