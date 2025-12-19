@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: jaeger-vs
+  namespace: jaeger
+spec:
+  gateways:
+  - istio-system/common-gateway
+  hosts:
+  - jaeger.local
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: jaeger-query
+        port:
+          number: 16686
