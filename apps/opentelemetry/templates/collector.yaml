@@ -1,7 +1,7 @@
 apiVersion: opentelemetry.io/v1alpha1
 kind: OpenTelemetryCollector
 metadata:
-  name: otel-collector
+  name: simple-collector
   namespace: opentelemetry
 spec:
   config: |
@@ -18,7 +18,6 @@ spec:
     
     exporters:
       debug:
-        verbosity: detailed
     
     service:
       pipelines:
