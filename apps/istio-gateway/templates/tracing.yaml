@@ -6,7 +6,7 @@ metadata:
 spec:
   tracing:
   - providers:
-    - name: jaeger
+    - name: otel
   - randomSamplingPercentage: 100.0
 ---
 apiVersion: v1
@@ -22,12 +22,12 @@ data:
       metrics:
       - prometheus
       tracing:
-      - jaeger
+      - otel
     enablePrometheusMerge: true
     extensionProviders:
-    - name: jaeger
+    - name: otel
       envoyOtelAls:
-        service: jaeger-collector.jaeger.svc.cluster.local
+        service: tbyte-collector.opentelemetry.svc.cluster.local
         port: 4317
     rootNamespace: istio-system
     trustDomain: cluster.local
