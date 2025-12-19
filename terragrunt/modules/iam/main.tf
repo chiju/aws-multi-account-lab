@@ -7,9 +7,9 @@ data "aws_eks_cluster" "cluster" {
   name  = var.cluster_name
 }
 
-# Look up RDS secret by name if not provided - skip during plan
+# Look up RDS secret by name if not provided - skip during plan and when using AWS-managed passwords
 data "aws_secretsmanager_secret" "rds_secret" {
-  count = var.rds_secret_arn == null && var.cluster_oidc_issuer_url != null && !can(regex("(?i)mock", var.cluster_oidc_issuer_url)) ? 1 : 0
+  count = false ? 1 : 0  # Disabled - now using AWS-managed RDS passwords
   name  = "${var.cluster_name}-postgres-password"
 }
 
