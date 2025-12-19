@@ -38,7 +38,7 @@ spec:
           exact: grafana.local
     route:
     - destination:
-        host: kube-prometheus-stack-grafana.monitoring.svc.cluster.local
+        host: monitoring-grafana.monitoring.svc.cluster.local
         port:
           number: 80
   # ArgoCD Route

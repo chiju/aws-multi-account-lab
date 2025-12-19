@@ -15,9 +15,10 @@ resource "aws_secretsmanager_secret" "x_clone_secrets" {
 resource "aws_secretsmanager_secret_version" "x_clone_secrets" {
   secret_id = aws_secretsmanager_secret.x_clone_secrets.id
   secret_string = jsonencode({
-    DATABASE_URL    = "PLACEHOLDER"
-    NEXTAUTH_SECRET = "PLACEHOLDER"
-    NEXTAUTH_URL    = "PLACEHOLDER"
+    DATABASE_URL        = "PLACEHOLDER"
+    NEXTAUTH_SECRET     = "PLACEHOLDER"
+    NEXTAUTH_JWT_SECRET = "PLACEHOLDER"
+    NEXTAUTH_URL        = "PLACEHOLDER"
   })
 
   lifecycle {
