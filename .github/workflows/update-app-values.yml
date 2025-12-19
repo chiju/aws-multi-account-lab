@@ -50,6 +50,9 @@ jobs:
           cd ../rds
           terragrunt init --non-interactive
           echo "rds_secret_arn=$(terragrunt output -raw secrets_manager_secret_arn)" >> $GITHUB_OUTPUT
+          echo "rds_host=$(terragrunt output -raw db_endpoint | cut -d: -f1)" >> $GITHUB_OUTPUT
+          echo "rds_port=$(terragrunt output -raw db_port)" >> $GITHUB_OUTPUT
+          echo "rds_database=$(terragrunt output -raw db_name)" >> $GITHUB_OUTPUT
       
       - name: Update Karpenter values.yaml
         run: |
@@ -97,7 +100,39 @@ jobs:
       
       - name: Update RDS External Secret
         run: |
-          sed -i "s|key: .*|key: ${{ steps.terraform.outputs.rds_secret_arn }}|g" apps/external-secrets/templates/rds-external-secret.yaml
+          cat > apps/external-secrets/templates/rds-external-secret.yaml <<EOF
+          apiVersion: external-secrets.io/v1
+          kind: ExternalSecret
+          metadata:
+            name: rds-credentials
+            namespace: tbyte
+            annotations:
+              argocd.argoproj.io/sync-wave: "3"
+          spec:
+            refreshInterval: 1h
+            secretStoreRef:
+              name: aws-secrets-manager
+              kind: ClusterSecretStore
+            target:
+              name: rds-credentials
+              creationPolicy: Owner
+            dataFrom:
+            - extract:
+                key: ${{ steps.terraform.outputs.rds_secret_arn }}
+            data:
+            - secretKey: host
+              remoteRef:
+                key: literal
+                property: ${{ steps.terraform.outputs.rds_host }}
+            - secretKey: port
+              remoteRef:
+                key: literal
+                property: "${{ steps.terraform.outputs.rds_port }}"
+            - secretKey: dbname
+              remoteRef:
+                key: literal
+                property: ${{ steps.terraform.outputs.rds_database }}
+          EOF
       
       - name: Commit and Push
         run: |
