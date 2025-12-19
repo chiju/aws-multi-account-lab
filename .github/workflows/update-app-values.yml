@@ -116,22 +116,16 @@ jobs:
             target:
               name: rds-credentials
               creationPolicy: Owner
+              template:
+                data:
+                  host: ${{ steps.terraform.outputs.rds_host }}
+                  port: "${{ steps.terraform.outputs.rds_port }}"
+                  dbname: ${{ steps.terraform.outputs.rds_database }}
+                  username: "{{ .username }}"
+                  password: "{{ .password }}"
             dataFrom:
             - extract:
                 key: ${{ steps.terraform.outputs.rds_secret_arn }}
-            data:
-            - secretKey: host
-              remoteRef:
-                key: literal
-                property: ${{ steps.terraform.outputs.rds_host }}
-            - secretKey: port
-              remoteRef:
-                key: literal
-                property: "${{ steps.terraform.outputs.rds_port }}"
-            - secretKey: dbname
-              remoteRef:
-                key: literal
-                property: ${{ steps.terraform.outputs.rds_database }}
           EOF
       
       - name: Commit and Push
