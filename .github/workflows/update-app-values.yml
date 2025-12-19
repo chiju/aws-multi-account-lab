@@ -46,6 +46,10 @@ jobs:
           cd ../iam
           terragrunt init --non-interactive
           echo "eso_role_arn=$(terragrunt output -raw eso_role_arn)" >> $GITHUB_OUTPUT
+          
+          cd ../rds
+          terragrunt init --non-interactive
+          echo "rds_secret_name=$(terragrunt output -raw secrets_manager_secret_name)" >> $GITHUB_OUTPUT
       
       - name: Update Karpenter values.yaml
         run: |
@@ -91,10 +95,14 @@ jobs:
         run: |
           sed -i "s|eks.amazonaws.com/role-arn: \".*\"|eks.amazonaws.com/role-arn: \"${{ steps.terraform.outputs.eso_role_arn }}\"|g" apps/external-secrets/values.yaml
       
+      - name: Update RDS External Secret
+        run: |
+          sed -i "s|key: .*|key: ${{ steps.terraform.outputs.rds_secret_name }}|g" apps/external-secrets/templates/rds-external-secret.yaml
+      
       - name: Commit and Push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add apps/karpenter/values.yaml apps/karpenter/templates/ec2nodeclass.yaml apps/kube-prometheus-stack/values.yaml apps/external-secrets/values.yaml
+          git add apps/karpenter/values.yaml apps/karpenter/templates/ec2nodeclass.yaml apps/kube-prometheus-stack/values.yaml apps/external-secrets/values.yaml apps/external-secrets/templates/rds-external-secret.yaml
           git diff --staged --quiet || git commit -m "chore: Update app values from Terragrunt outputs [skip ci]"
           git push
