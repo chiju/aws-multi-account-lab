@@ -4,7 +4,7 @@
 karpenter:
   settings:
     clusterName: tbyte-dev
-    clusterEndpoint: https://1E43BFD1D79E1919877603DE870E1BFD.gr7.eu-central-1.eks.amazonaws.com
+    clusterEndpoint: https://16580BFA0E6890A4B0572F301218F321.gr7.eu-central-1.eks.amazonaws.com
     interruptionQueue: 
   
   serviceAccount:
