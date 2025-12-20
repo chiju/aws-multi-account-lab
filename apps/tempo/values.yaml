@@ -15,9 +15,6 @@ tempo:
     server:
       http_listen_port: 3200
     metrics_generator:
-      ring:
-        kvstore:
-          store: memberlist
       registry:
         external_labels:
           source: tempo
@@ -41,6 +38,10 @@ tempo:
           processors: [service-graphs, span-metrics]
           collection_interval: 15s
           disable_collection: false
+    
+  # Enable metrics generator as a target
+  metricsGenerator:
+    enabled: true
   
   persistence:
     enabled: true
