@@ -59,14 +59,19 @@ kube-prometheus-stack:
         access: proxy
         isDefault: false
         jsonData:
+          nodeGraph:
+            enabled: true
           serviceMap:
-            datasourceUid: tempo-service-graph
-      - name: Tempo Service Graph
-        uid: tempo-service-graph
-        type: prometheus
-        url: http://tempo.tempo.svc.cluster.local:3200/metrics
-        access: proxy
-        isDefault: false
+            enabled: true
+          search:
+            hide: false
+          traceQuery:
+            timeShiftEnabled: true
+            spanStartTimeShift: 1h
+            spanEndTimeShift: 1h
+          spanBar:
+            type: Tag
+            tag: http.status_code
       - name: CloudWatch
         type: cloudwatch
         access: proxy
