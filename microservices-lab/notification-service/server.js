@@ -27,7 +27,6 @@ let notificationIdCounter = 1;
 app.get('/health', (req, res) => {
   res.json({ service: 'notification-service', status: 'healthy', port: 3005 });
 });
-});
 
 // Send notification (called by order-service)
 app.post('/notifications/send', (req, res) => {
@@ -39,29 +38,41 @@ app.post('/notifications/send', (req, res) => {
     userId,
     message,
     type,
-    status: 'sent',
-    sentAt: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    status: 'sent'
   };
   
   notifications.push(notification);
-  
-  // Simulate sending email/SMS
-  console.log(`✅ Notification Service: ${type} sent to user ${userId}: "${message}"`);
   
   res.json({ 
     success: true, 
     notification,
     message: 'Notification sent successfully' 
-    instrumentations: [getNodeAutoInstrumentations()],
-});
-  instrumentations: [getNodeAutoInstrumentations()],
+  });
 });
 
 // Get all notifications
 app.get('/notifications', (req, res) => {
-  res.json({ notifications, count: notifications.length   instrumentations: [getNodeAutoInstrumentations()],
-});
-  instrumentations: [getNodeAutoInstrumentations()],
+  res.json({
+    success: true,
+    data: notifications,
+    count: notifications.length
+  });
 });
 
-app.listen(3005, () => console.log('📧 Notification Service running on port 3005'));
+// Get notifications for a specific user
+app.get('/notifications/user/:userId', (req, res) => {
+  const { userId } = req.params;
+  const userNotifications = notifications.filter(n => n.userId === parseInt(userId));
+  
+  res.json({
+    success: true,
+    data: userNotifications,
+    count: userNotifications.length
+  });
+});
+
+const PORT = process.env.PORT || 3005;
+app.listen(PORT, () => {
+  console.log(`📧 Notification Service running on port ${PORT}`);
+});
