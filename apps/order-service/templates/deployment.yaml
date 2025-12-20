@@ -11,9 +11,9 @@ spec:
   template:
     metadata:
       labels:
+        app: order-service
       annotations:
         sidecar.istio.io/inject: "true"
-        app: order-service
     spec:
       containers:
       - name: order-service
