@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: frontend-service-monitor
+  namespace: frontend-service
+  labels:
+    app: frontend-service
+spec:
+  selector:
+    matchLabels:
+      app: frontend-service
+  endpoints:
+  - port: http
+    path: /metrics
+    interval: 30s

@@ -1,0 +1,21 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: frontend-service-vs
+  namespace: frontend-service
+spec:
+  gateways:
+  - istio-system/common-gateway
+  hosts:
+  - microservices.local
+  http:
+  - match:
+    - uri:
+        prefix: /dashboard
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: frontend-service.frontend-service.svc.cluster.local
+        port:
+          number: 80

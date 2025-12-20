@@ -1,0 +1,81 @@
+name: Frontend Service CI/CD Pipeline
+
+on:
+  workflow_dispatch:
+
+env:
+  AWS_REGION: eu-central-1
+  ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID_DEV }}.dkr.ecr.eu-central-1.amazonaws.com
+  IMAGE_NAME: tbyte-dev-frontend-service
+
+permissions:
+  id-token: write
+  contents: write
+  deployments: write
+  security-events: write
+  pull-requests: write
+
+jobs:
+  build-and-push:
+    name: Build and Push Frontend Service
+    runs-on: ubuntu-latest
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tag }}
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_DEV }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Generate Metadata
+        id: meta
+        run: |
+          TAG=${GITHUB_SHA::8}
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+      - name: Build and Push Frontend Service Image
+        working-directory: microservices-lab/frontend-service
+        run: |
+          docker build -t $ECR_REGISTRY/$IMAGE_NAME:${{ steps.meta.outputs.tag }} .
+          docker build -t $ECR_REGISTRY/$IMAGE_NAME:latest .
+          docker push $ECR_REGISTRY/$IMAGE_NAME:${{ steps.meta.outputs.tag }}
+          docker push $ECR_REGISTRY/$IMAGE_NAME:latest
+
+  deploy:
+    name: GitOps Deployment
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update Helm Values
+        run: |
+          sed -i "s|repository: .*|repository: ${{ env.ECR_REGISTRY }}/${{ env.IMAGE_NAME }}|g" apps/frontend-service/values.yaml
+          sed -i "s|tag: \".*\"|tag: \"${{ needs.build-and-push.outputs.image-tag }}\"|g" apps/frontend-service/values.yaml
+
+      - name: Commit & Push GitOps Changes
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git add apps/frontend-service/values.yaml
+          git commit -m "🚀 Deploy Frontend Service ${{ needs.build-and-push.outputs.image-tag }} via ArgoCD
+          
+          - Update image tag to ${{ needs.build-and-push.outputs.image-tag }}
+          - Repository: ${{ env.ECR_REGISTRY }}/${{ env.IMAGE_NAME }}
+          - Trigger ArgoCD sync for deployment" || exit 0
+          
+          git push

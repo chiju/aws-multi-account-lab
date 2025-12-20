@@ -8,6 +8,11 @@ output "backend_repository_url" {
   value       = aws_ecr_repository.backend.repository_url
 }
 
+output "frontend_service_repository_url" {
+  description = "URL of the frontend service ECR repository"
+  value       = aws_ecr_repository.frontend_service.repository_url
+}
+
 output "x_clone_repository_url" {
   description = "URL of the X Clone ECR repository"
   value       = aws_ecr_repository.x_clone.repository_url

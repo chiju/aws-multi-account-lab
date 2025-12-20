@@ -44,6 +44,28 @@ resource "aws_ecr_repository" "backend" {
   }
 }
 
+# Frontend Service ECR Repository
+resource "aws_ecr_repository" "frontend_service" {
+  name                 = "frontend-service"
+  image_tag_mutability = "MUTABLE"
+  force_delete         = true
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  encryption_configuration {
+    encryption_type = "AES256"
+  }
+
+  tags = {
+    Name        = "frontend-service"
+    Environment = var.environment
+    ManagedBy   = "terraform"
+    Component   = "frontend-microservice"
+  }
+}
+
 # X Clone ECR Repository
 resource "aws_ecr_repository" "x_clone" {
   name                 = "x-clone"
