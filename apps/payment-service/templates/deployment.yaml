@@ -33,10 +33,11 @@ spec:
         livenessProbe:
           httpGet:
             path: /health
-            port: 3001
+            port: 3004
           initialDelaySeconds: 30
         readinessProbe:
           httpGet:
             path: /health
+            port: 3004
             port: 3001
           initialDelaySeconds: 5
