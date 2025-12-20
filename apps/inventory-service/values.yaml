@@ -2,7 +2,7 @@ replicaCount: 2
 
 image:
   repository: 575491070504.dkr.ecr.eu-central-1.amazonaws.com/tbyte-dev-inventory-service
-  tag: "6e1f2576"
+  tag: "10228f33"
   pullPolicy: Always
 
 service:
