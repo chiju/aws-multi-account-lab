@@ -1,5 +1,5 @@
 // OpenTelemetry instrumentation - must be first
-const { NodeSDK } = require('@opentelemetry/auto-instrumentations-node');
+const { NodeSDK } = require('@opentelemetry/sdk-node');
 const { getNodeAutoInstrumentations } = require('@opentelemetry/auto-instrumentations-node');
 const { Resource } = require('@opentelemetry/resources');
 const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventions');
@@ -9,7 +9,7 @@ const sdk = new NodeSDK({
     [SemanticResourceAttributes.SERVICE_NAME]: 'inventory-service',
     [SemanticResourceAttributes.SERVICE_VERSION]: '1.0.0',
   }),
-  instrumentations: [getNodeAutoInstrumentations()],
+
 });
 sdk.start();
 
@@ -28,9 +28,7 @@ const inventory = [
 ];
 
 app.get('/health', (req, res) => {
-  res.json({ service: 'inventory-service', status: 'healthy', port: 3003   instrumentations: [getNodeAutoInstrumentations()],
-});
-  instrumentations: [getNodeAutoInstrumentations()],
+  res.json({ service: 'inventory-service', status: 'healthy', port: 3003 });
 });
 
 // Check inventory (called by order-service)
@@ -40,7 +38,7 @@ app.post('/inventory/check', (req, res) => {
   
   const product = inventory.find(p => p.productId === productId);
   if (!product) {
-    return res.status(404).json({ available: false, error: 'Product not found'   instrumentations: [getNodeAutoInstrumentations()],
+    return res.status(404).json({ available: false, error: 'Product not found'
 });
   }
   
@@ -49,7 +47,7 @@ app.post('/inventory/check', (req, res) => {
       available: false, 
       error: 'Insufficient stock',
       available_stock: product.stock 
-      instrumentations: [getNodeAutoInstrumentations()],
+   
 });
   }
   
@@ -62,16 +60,16 @@ app.post('/inventory/check', (req, res) => {
     product: product.name,
     reserved_quantity: quantity,
     remaining_stock: product.stock 
-    instrumentations: [getNodeAutoInstrumentations()],
+ 
 });
-  instrumentations: [getNodeAutoInstrumentations()],
+
 });
 
 // Get all inventory
 app.get('/inventory', (req, res) => {
-  res.json({ inventory, count: inventory.length   instrumentations: [getNodeAutoInstrumentations()],
+  res.json({ inventory, count: inventory.length
 });
-  instrumentations: [getNodeAutoInstrumentations()],
+
 });
 
 app.listen(3003, () => console.log('📦 Inventory Service running on port 3003'));
