@@ -1,14 +1,14 @@
 replicaCount: 2
 
 image:
-  repository: 575491070504.dkr.ecr.eu-central-1.amazonaws.com/tbyte-dev-user-service
+  repository: 575491070504.dkr.ecr.eu-central-1.amazonaws.com/tbyte-dev-payment-service
   tag: "2120ff36"
   pullPolicy: Always
 
 service:
   type: ClusterIP
   port: 80
-  targetPort: 3001
+  targetPort: 3004
 
 resources:
   requests:
