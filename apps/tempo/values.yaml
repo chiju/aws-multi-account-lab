@@ -1,17 +1,28 @@
 tempo:
-  tempo:
+  # Enable metrics generator at the Helm chart level
+  metricsGenerator:
+    enabled: true
+    config:
+      processor:
+        service_graphs:
+          wait: 10s
+        span_metrics:
+          histogram_buckets: [0.002, 0.004, 0.008, 0.016, 0.032, 0.064, 0.128, 0.256, 0.512, 1.024, 2.048, 4.096]
+          enable_target_info: true
+      registry:
+        collection_interval: 15s
+        external_labels:
+          source: tempo
+          cluster: tbyte-dev
+      storage:
+        path: /var/tempo/wal
+        remote_write:
+          - url: http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090/api/v1/write
+            send_exemplars: true
+  
+  # Override configuration to enable metrics generator
+  config: |
     multitenancy_enabled: false
-    
-    storage:
-      trace:
-        backend: local
-        local:
-          path: /var/tempo/traces
-        wal:
-          path: /var/tempo/wal
-    
-    server:
-      http_listen_port: 3200
     
     distributor:
       receivers:
@@ -22,39 +33,42 @@ tempo:
             http:
               endpoint: 0.0.0.0:4318
     
-    # Metrics generator configuration for single binary mode
+    server:
+      http_listen_port: 3200
+    
+    storage:
+      trace:
+        backend: local
+        local:
+          path: /var/tempo/traces
+        wal:
+          path: /var/tempo/wal
+    
+    # Enable metrics generator in main config
     metrics_generator:
       processor:
         service_graphs:
           wait: 10s
-          dimensions: [service.name, service.namespace]
         span_metrics:
-          dimensions: [service.name, service.namespace]
           histogram_buckets: [0.002, 0.004, 0.008, 0.016, 0.032, 0.064, 0.128, 0.256, 0.512, 1.024, 2.048, 4.096]
           enable_target_info: true
-      
       registry:
         collection_interval: 15s
         external_labels:
           source: tempo
           cluster: tbyte-dev
-      
       storage:
         path: /var/tempo/wal
         remote_write:
           - url: http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090/api/v1/write
             send_exemplars: true
     
-    # Critical: Enable metrics generator in overrides for single binary
+    # Enable in overrides
     overrides:
       defaults:
         metrics_generator:
           processors: [service-graphs, span-metrics]
           collection_interval: 15s
-          
-  # Enable metrics generator at the Helm chart level
-  metricsGenerator:
-    enabled: true
   
   persistence:
     enabled: true
