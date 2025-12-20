@@ -1,5 +1,6 @@
 // OpenTelemetry instrumentation - must be first
-const { NodeSDK } = require('@opentelemetry/auto-instrumentations-node');
+const { NodeSDK } = require('@opentelemetry/sdk-node');
+const { getNodeAutoInstrumentations } = require('@opentelemetry/sdk-node');
 const { Resource } = require('@opentelemetry/resources');
 const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventions');
 
@@ -8,6 +9,7 @@ const sdk = new NodeSDK({
     [SemanticResourceAttributes.SERVICE_NAME]: '$service',
     [SemanticResourceAttributes.SERVICE_VERSION]: '1.0.0',
   }),
+  instrumentations: [getNodeAutoInstrumentations()],
 });
 sdk.start();
 
@@ -23,7 +25,9 @@ let notifications = [];
 let notificationIdCounter = 1;
 
 app.get('/health', (req, res) => {
-  res.json({ service: 'notification-service', status: 'healthy', port: 3005 });
+  res.json({ service: 'notification-service', status: 'healthy', port: 3005   instrumentations: [getNodeAutoInstrumentations()],
+});
+  instrumentations: [getNodeAutoInstrumentations()],
 });
 
 // Send notification (called by order-service)
@@ -49,12 +53,16 @@ app.post('/notifications/send', (req, res) => {
     success: true, 
     notification,
     message: 'Notification sent successfully' 
-  });
+    instrumentations: [getNodeAutoInstrumentations()],
+});
+  instrumentations: [getNodeAutoInstrumentations()],
 });
 
 // Get all notifications
 app.get('/notifications', (req, res) => {
-  res.json({ notifications, count: notifications.length });
+  res.json({ notifications, count: notifications.length   instrumentations: [getNodeAutoInstrumentations()],
+});
+  instrumentations: [getNodeAutoInstrumentations()],
 });
 
 app.listen(3005, () => console.log('📧 Notification Service running on port 3005'));

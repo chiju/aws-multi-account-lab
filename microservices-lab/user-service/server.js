@@ -1,5 +1,6 @@
 // OpenTelemetry instrumentation - must be first
-const { NodeSDK } = require('@opentelemetry/auto-instrumentations-node');
+const { NodeSDK } = require('@opentelemetry/sdk-node');
+const { getNodeAutoInstrumentations } = require('@opentelemetry/sdk-node');
 const { Resource } = require('@opentelemetry/resources');
 const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventions');
 
@@ -8,6 +9,7 @@ const sdk = new NodeSDK({
     [SemanticResourceAttributes.SERVICE_NAME]: 'user-service',
     [SemanticResourceAttributes.SERVICE_VERSION]: '1.0.0',
   }),
+  instrumentations: [getNodeAutoInstrumentations()],
 });
 sdk.start();
 
@@ -26,7 +28,9 @@ const users = [
 ];
 
 app.get('/health', (req, res) => {
-  res.json({ service: 'user-service', status: 'healthy', port: 3001 });
+  res.json({ service: 'user-service', status: 'healthy', port: 3001   instrumentations: [getNodeAutoInstrumentations()],
+});
+  instrumentations: [getNodeAutoInstrumentations()],
 });
 
 // Validate user (called by order-service)
@@ -35,11 +39,15 @@ app.post('/users/validate', (req, res) => {
   console.log(`🔍 User Service: Validating user ${userId}`);
   
   const user = users.find(u => u.id === userId);
-  if (!user) return res.status(404).json({ valid: false, error: 'User not found' });
-  if (user.status !== 'active') return res.status(403).json({ valid: false, error: 'User inactive' });
+  if (!user) return res.status(404).json({ valid: false, error: 'User not found'   instrumentations: [getNodeAutoInstrumentations()],
+});
+  if (user.status !== 'active') return res.status(403).json({ valid: false, error: 'User inactive'   instrumentations: [getNodeAutoInstrumentations()],
+});
   
   console.log(`✅ User Service: User ${userId} is valid`);
-  res.json({ valid: true, user });
+  res.json({ valid: true, user   instrumentations: [getNodeAutoInstrumentations()],
+});
+  instrumentations: [getNodeAutoInstrumentations()],
 });
 
 app.listen(3001, () => console.log('👤 User Service running on port 3001'));
