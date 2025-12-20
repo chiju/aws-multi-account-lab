@@ -14,6 +14,36 @@ tempo:
             endpoint: 0.0.0.0:4318
     server:
       http_listen_port: 3200
+    metrics_generator:
+      registry:
+        external_labels:
+          source: tempo
+          cluster: tempo
+      storage:
+        path: /tmp/tempo/generator/wal
+        remote_write:
+          - url: http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090/api/v1/write
+            queue_config:
+              capacity: 10000
+              max_shards: 200
+              min_shards: 1
+              max_samples_per_send: 1000
+              batch_send_deadline: 5s
+              min_backoff: 30ms
+              max_backoff: 100ms
+      processor:
+        service_graphs:
+          dimensions:
+            - http.method
+            - http.target
+            - http.status_code
+          histogram_buckets: [.1, .2, .4, .8, 1.6, 3.2, 6.4, 12.8]
+        span_metrics:
+          dimensions:
+            - http.method
+            - http.target
+            - http.status_code
+          histogram_buckets: [.002, .005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10]
   
   persistence:
     enabled: true
