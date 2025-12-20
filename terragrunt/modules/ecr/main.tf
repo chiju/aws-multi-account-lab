@@ -66,6 +66,112 @@ resource "aws_ecr_repository" "x_clone" {
   }
 }
 
+# Microservices ECR Repositories
+resource "aws_ecr_repository" "user_service" {
+  name                 = "${var.cluster_name}-user-service"
+  image_tag_mutability = "MUTABLE"
+  force_delete         = true
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  encryption_configuration {
+    encryption_type = "AES256"
+  }
+
+  tags = {
+    Name        = "${var.cluster_name}-user-service"
+    Environment = var.environment
+    ManagedBy   = "terraform"
+    Component   = "microservices"
+  }
+}
+
+resource "aws_ecr_repository" "order_service" {
+  name                 = "${var.cluster_name}-order-service"
+  image_tag_mutability = "MUTABLE"
+  force_delete         = true
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  encryption_configuration {
+    encryption_type = "AES256"
+  }
+
+  tags = {
+    Name        = "${var.cluster_name}-order-service"
+    Environment = var.environment
+    ManagedBy   = "terraform"
+    Component   = "microservices"
+  }
+}
+
+resource "aws_ecr_repository" "inventory_service" {
+  name                 = "${var.cluster_name}-inventory-service"
+  image_tag_mutability = "MUTABLE"
+  force_delete         = true
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  encryption_configuration {
+    encryption_type = "AES256"
+  }
+
+  tags = {
+    Name        = "${var.cluster_name}-inventory-service"
+    Environment = var.environment
+    ManagedBy   = "terraform"
+    Component   = "microservices"
+  }
+}
+
+resource "aws_ecr_repository" "payment_service" {
+  name                 = "${var.cluster_name}-payment-service"
+  image_tag_mutability = "MUTABLE"
+  force_delete         = true
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  encryption_configuration {
+    encryption_type = "AES256"
+  }
+
+  tags = {
+    Name        = "${var.cluster_name}-payment-service"
+    Environment = var.environment
+    ManagedBy   = "terraform"
+    Component   = "microservices"
+  }
+}
+
+resource "aws_ecr_repository" "notification_service" {
+  name                 = "${var.cluster_name}-notification-service"
+  image_tag_mutability = "MUTABLE"
+  force_delete         = true
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  encryption_configuration {
+    encryption_type = "AES256"
+  }
+
+  tags = {
+    Name        = "${var.cluster_name}-notification-service"
+    Environment = var.environment
+    ManagedBy   = "terraform"
+    Component   = "microservices"
+  }
+}
+
 # Lifecycle policies to manage image retention
 resource "aws_ecr_lifecycle_policy" "frontend" {
   repository = aws_ecr_repository.frontend.name
