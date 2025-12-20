@@ -25,9 +25,8 @@ let notifications = [];
 let notificationIdCounter = 1;
 
 app.get('/health', (req, res) => {
-  res.json({ service: 'notification-service', status: 'healthy', port: 3005   instrumentations: [getNodeAutoInstrumentations()],
+  res.json({ service: 'notification-service', status: 'healthy', port: 3005 });
 });
-  instrumentations: [getNodeAutoInstrumentations()],
 });
 
 // Send notification (called by order-service)
