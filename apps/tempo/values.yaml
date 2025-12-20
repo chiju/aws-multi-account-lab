@@ -14,6 +14,8 @@ tempo:
             endpoint: 0.0.0.0:4318
     server:
       http_listen_port: 3200
+    # Configure metrics generator to run in single binary mode
+    target: all
     metrics_generator:
       registry:
         external_labels:
@@ -38,10 +40,6 @@ tempo:
           processors: [service-graphs, span-metrics]
           collection_interval: 15s
           disable_collection: false
-    
-  # Enable metrics generator as a target
-  metricsGenerator:
-    enabled: true
   
   persistence:
     enabled: true
