@@ -11,9 +11,9 @@ spec:
   template:
     metadata:
       labels:
+        app: payment-service
       annotations:
         sidecar.istio.io/inject: "true"
-        app: payment-service
     spec:
       containers:
       - name: payment-service

@@ -11,9 +11,9 @@ spec:
   template:
     metadata:
       labels:
+        app: notification-service
       annotations:
         sidecar.istio.io/inject: "true"
-        app: notification-service
     spec:
       containers:
       - name: notification-service
