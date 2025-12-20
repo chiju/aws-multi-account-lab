@@ -1,6 +1,12 @@
 # RDS PostgreSQL Database for microservices
 # Production-ready with Multi-AZ, encryption, and automated backups
 
+locals {
+  # Since we're using manage_master_user_password = true, a secret is always created
+  # We use a local to avoid count dependency issues
+  has_managed_password = true
+}
+
 # DB Subnet Group for RDS
 resource "aws_db_subnet_group" "postgres" {
   name       = "${var.cluster_name}-postgres-subnet-group"
@@ -55,13 +61,14 @@ resource "aws_security_group" "postgres" {
 }
 
 # Use AWS-managed RDS master user secret
+# Use local value to avoid count dependency issues
 data "aws_secretsmanager_secret" "postgres_password" {
-  count = length(aws_db_instance.postgres.master_user_secret) > 0 ? 1 : 0
+  count = local.has_managed_password ? 1 : 0
   arn   = aws_db_instance.postgres.master_user_secret[0].secret_arn
 }
 
 data "aws_secretsmanager_secret_version" "postgres_password" {
-  count     = length(aws_db_instance.postgres.master_user_secret) > 0 ? 1 : 0
+  count     = local.has_managed_password ? 1 : 0
   secret_id = data.aws_secretsmanager_secret.postgres_password[0].id
 }
 
