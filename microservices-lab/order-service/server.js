@@ -1,0 +1,77 @@
+const express = require('express');
+const axios = require('axios');
+const cors = require('cors');
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+// Mock orders database
+let orders = [];
+let orderIdCounter = 1;
+
+app.get('/health', (req, res) => {
+  res.json({ service: 'order-service', status: 'healthy', port: 3002 });
+});
+
+// Create order (calls 3 other services)
+app.post('/orders', async (req, res) => {
+  const { userId, productId, quantity, amount } = req.body;
+  console.log(`📦 Order Service: Creating order for user ${userId}`);
+
+  try {
+    // 1. Validate user
+    console.log('→ Calling User Service...');
+    const userResponse = await axios.post('http://user-service.user-service.svc.cluster.local/users/validate', { userId });
+    
+    // 2. Check inventory
+    console.log('→ Calling Inventory Service...');
+    const inventoryResponse = await axios.post('http://inventory-service.inventory-service.svc.cluster.local/inventory/check', { 
+      productId, quantity 
+    });
+    
+    // 3. Process payment
+    console.log('→ Calling Payment Service...');
+    const paymentResponse = await axios.post('http://payment-service.payment-service.svc.cluster.local/payments/process', { 
+      userId, amount 
+    });
+    
+    // 4. Create order
+    const order = {
+      id: orderIdCounter++,
+      userId,
+      productId,
+      quantity,
+      amount,
+      status: 'confirmed',
+      createdAt: new Date().toISOString()
+    };
+    orders.push(order);
+    
+    // 5. Send notification
+    console.log('→ Calling Notification Service...');
+    await axios.post('http://notification-service.notification-service.svc.cluster.local/notifications/send', {
+      userId,
+      message: `Order ${order.id} confirmed`,
+      type: 'order_confirmation'
+    });
+    
+    console.log(`✅ Order Service: Order ${order.id} created successfully`);
+    res.status(201).json({ success: true, order });
+    
+  } catch (error) {
+    console.error('❌ Order Service: Order creation failed:', error.message);
+    res.status(400).json({ 
+      success: false, 
+      error: 'Order creation failed',
+      details: error.response?.data || error.message 
+    });
+  }
+});
+
+// Get all orders
+app.get('/orders', (req, res) => {
+  res.json({ orders, count: orders.length });
+});
+
+app.listen(3002, () => console.log('📦 Order Service running on port 3002'));

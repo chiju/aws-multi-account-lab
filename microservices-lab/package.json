@@ -1,0 +1,22 @@
+{
+  "name": "microservices-lab",
+  "version": "1.0.0",
+  "description": "5 Microservices Learning Lab",
+  "scripts": {
+    "start:user": "node user-service/server.js",
+    "start:order": "node order-service/server.js", 
+    "start:inventory": "node inventory-service/server.js",
+    "start:payment": "node payment-service/server.js",
+    "start:notification": "node notification-service/server.js",
+    "start:all": "concurrently \"npm run start:user\" \"npm run start:order\" \"npm run start:inventory\" \"npm run start:payment\" \"npm run start:notification\"",
+    "test": "curl http://localhost:3002/orders -X POST -H 'Content-Type: application/json' -d '{\"userId\":1,\"productId\":1,\"quantity\":2,\"amount\":1998}'"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.0",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
