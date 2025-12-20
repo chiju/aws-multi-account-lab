@@ -14,8 +14,14 @@ tempo:
             endpoint: 0.0.0.0:4318
     server:
       http_listen_port: 3200
-    # Configure metrics generator to run in single binary mode
-    target: all
+    distributor:
+      receivers:
+        otlp:
+          protocols:
+            grpc:
+              endpoint: 0.0.0.0:4317
+            http:
+              endpoint: 0.0.0.0:4318
     metrics_generator:
       registry:
         external_labels:
@@ -34,12 +40,6 @@ tempo:
         span_metrics:
           dimensions: [service.name, service.namespace]
           histogram_buckets: [.002, .005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10]
-    overrides:
-      defaults:
-        metrics_generator:
-          processors: [service-graphs, span-metrics]
-          collection_interval: 15s
-          disable_collection: false
   
   persistence:
     enabled: true
