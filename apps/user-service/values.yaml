@@ -2,7 +2,7 @@ replicaCount: 2
 
 image:
   repository: 575491070504.dkr.ecr.eu-central-1.amazonaws.com/tbyte-dev-user-service
-  tag: "74cd7c36"
+  tag: "ff5a9238"
   pullPolicy: Always
 
 service:
