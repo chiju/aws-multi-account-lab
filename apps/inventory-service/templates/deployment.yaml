@@ -11,9 +11,9 @@ spec:
   template:
     metadata:
       labels:
+        app: inventory-service
       annotations:
         sidecar.istio.io/inject: "true"
-        app: inventory-service
     spec:
       containers:
       - name: inventory-service
