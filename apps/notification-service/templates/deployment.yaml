@@ -13,14 +13,21 @@ spec:
       labels:
       annotations:
         sidecar.istio.io/inject: "true"
-        app: user-service
+        app: notification-service
     spec:
       containers:
-      - name: user-service
+      - name: notification-service
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
-        - containerPort: 3001
+        - containerPort: 3005
+        env:
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: "http://microservices-collector.opentelemetry.svc.cluster.local:4318"
+        - name: OTEL_SERVICE_NAME
+          value: "notification-service"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "service.name=notification-service,service.version=1.0.0"
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
         livenessProbe:
