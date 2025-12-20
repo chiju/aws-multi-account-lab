@@ -9,7 +9,7 @@ const sdk = new NodeSDK({
     [SemanticResourceAttributes.SERVICE_NAME]: 'payment-service',
     [SemanticResourceAttributes.SERVICE_VERSION]: '1.0.0',
   }),
-
+  instrumentations: [getNodeAutoInstrumentations()],
 });
 sdk.start();
 
