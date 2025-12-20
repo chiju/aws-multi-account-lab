@@ -4,6 +4,9 @@
   "main": "server.js",
   "dependencies": {
     "express": "^4.18.2",
-    "cors": "^2.8.5"
+    "cors": "^2.8.5",
+    "@opentelemetry/auto-instrumentations-node": "^0.40.0",
+    "@opentelemetry/resources": "^1.18.0",
+    "@opentelemetry/semantic-conventions": "^1.18.0"
   }
 }

@@ -21,6 +21,13 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: 3002
+        env:
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: "http://tbyte-collector.opentelemetry.svc.cluster.local:4318"
+        - name: OTEL_SERVICE_NAME
+          value: "order-service"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "service.name=order-service,service.version=1.0.0"
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
         livenessProbe:
