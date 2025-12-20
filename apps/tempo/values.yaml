@@ -15,6 +15,9 @@ tempo:
     server:
       http_listen_port: 3200
     metrics_generator:
+      ring:
+        kvstore:
+          store: memberlist
       registry:
         external_labels:
           source: tempo
@@ -25,25 +28,19 @@ tempo:
           - url: http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090/api/v1/write
             queue_config:
               capacity: 10000
-              max_shards: 200
-              min_shards: 1
-              max_samples_per_send: 1000
-              batch_send_deadline: 5s
-              min_backoff: 30ms
-              max_backoff: 100ms
       processor:
         service_graphs:
-          dimensions:
-            - http.method
-            - http.target
-            - http.status_code
+          dimensions: [service.name, service.namespace]
           histogram_buckets: [.1, .2, .4, .8, 1.6, 3.2, 6.4, 12.8]
         span_metrics:
-          dimensions:
-            - http.method
-            - http.target
-            - http.status_code
+          dimensions: [service.name, service.namespace]
           histogram_buckets: [.002, .005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10]
+    overrides:
+      defaults:
+        metrics_generator:
+          processors: [service-graphs, span-metrics]
+          collection_interval: 15s
+          disable_collection: false
   
   persistence:
     enabled: true
