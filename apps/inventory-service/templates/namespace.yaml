@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: inventory-service
+  labels:
+    istio-injection: enabled
+    name: inventory-service

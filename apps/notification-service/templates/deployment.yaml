@@ -11,6 +11,8 @@ spec:
   template:
     metadata:
       labels:
+      annotations:
+        sidecar.istio.io/inject: "true"
         app: user-service
     spec:
       containers:
