@@ -23,15 +23,17 @@ spec:
     exporters:
       debug:
         verbosity: basic
-      otlphttp:
-        endpoint: http://jaeger-collector.jaeger.svc.cluster.local:4318
+      otlp:
+        endpoint: http://tempo.tempo.svc.cluster.local:4317
+        tls:
+          insecure: true
     
     service:
       pipelines:
         traces:
           receivers: [otlp]
           processors: [memory_limiter, batch]
-          exporters: [debug, otlphttp]
+          exporters: [debug, otlp]
         metrics:
           receivers: [otlp]
           processors: [memory_limiter, batch]

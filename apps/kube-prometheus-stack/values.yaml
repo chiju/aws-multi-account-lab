@@ -53,6 +53,11 @@ kube-prometheus-stack:
         url: http://loki-gateway.loki.svc.cluster.local
         access: proxy
         isDefault: false
+      - name: Tempo
+        type: tempo
+        url: http://tempo.tempo.svc.cluster.local:3200
+        access: proxy
+        isDefault: false
       - name: CloudWatch
         type: cloudwatch
         access: proxy
