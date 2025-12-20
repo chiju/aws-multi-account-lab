@@ -1,6 +1,6 @@
 // OpenTelemetry instrumentation - must be first
-const { NodeSDK } = require('@opentelemetry/sdk-node');
-const { getNodeAutoInstrumentations } = require('@opentelemetry/sdk-node');
+const { NodeSDK } = require('@opentelemetry/auto-instrumentations-node');
+const { getNodeAutoInstrumentations } = require('@opentelemetry/auto-instrumentations-node');
 const { Resource } = require('@opentelemetry/resources');
 const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventions');
 
