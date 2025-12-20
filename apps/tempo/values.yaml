@@ -24,7 +24,6 @@ tempo:
     
     # Metrics generator configuration for single binary mode
     metrics_generator:
-      # Remove ring configuration for single binary mode
       processor:
         service_graphs:
           wait: 10s
@@ -52,6 +51,10 @@ tempo:
         metrics_generator:
           processors: [service-graphs, span-metrics]
           collection_interval: 15s
+          
+  # Enable metrics generator at the Helm chart level
+  metricsGenerator:
+    enabled: true
   
   persistence:
     enabled: true
