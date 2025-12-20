@@ -8,7 +8,7 @@ frontend:
   enabled: true
   image:
     repository: 575491070504.dkr.ecr.eu-central-1.amazonaws.com/tbyte-dev-frontend
-    tag: "3fb27b33"
+    tag: "56c27576"
     pullPolicy: Always
   
   replicaCount: 5
