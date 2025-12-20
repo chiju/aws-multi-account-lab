@@ -28,9 +28,7 @@ const users = [
 ];
 
 app.get('/health', (req, res) => {
-  res.json({ service: 'user-service', status: 'healthy', port: 3001   instrumentations: [getNodeAutoInstrumentations()],
-});
-  instrumentations: [getNodeAutoInstrumentations()],
+  res.json({ service: 'user-service', status: 'healthy', port: 3001 });
 });
 
 // Validate user (called by order-service)
@@ -39,15 +37,11 @@ app.post('/users/validate', (req, res) => {
   console.log(`🔍 User Service: Validating user ${userId}`);
   
   const user = users.find(u => u.id === userId);
-  if (!user) return res.status(404).json({ valid: false, error: 'User not found'   instrumentations: [getNodeAutoInstrumentations()],
-});
-  if (user.status !== 'active') return res.status(403).json({ valid: false, error: 'User inactive'   instrumentations: [getNodeAutoInstrumentations()],
-});
+  if (!user) return res.status(404).json({ valid: false, error: 'User not found' });
+  if (user.status !== 'active') return res.status(403).json({ valid: false, error: 'User inactive' });
   
   console.log(`✅ User Service: User ${userId} is valid`);
-  res.json({ valid: true, user   instrumentations: [getNodeAutoInstrumentations()],
-});
-  instrumentations: [getNodeAutoInstrumentations()],
+  res.json({ valid: true, user });
 });
 
 app.listen(3001, () => console.log('👤 User Service running on port 3001'));
