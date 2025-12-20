@@ -61,6 +61,12 @@ app.get('/health', (req, res) => {
   res.json({ service: 'user-service', status: 'healthy', port: 3001 });
 });
 
+// Get all users (for frontend dashboard)
+app.get('/users', (req, res) => {
+  console.log('📋 User Service: Fetching all users');
+  res.json({ users, count: users.length });
+});
+
 // Validate user (called by order-service)
 app.post('/users/validate', (req, res) => {
   const { userId } = req.body;

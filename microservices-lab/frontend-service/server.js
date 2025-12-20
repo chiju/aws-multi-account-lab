@@ -154,6 +154,30 @@ app.get('/api/orders', async (req, res) => {
   }
 });
 
+// Get users (mock data for dashboard)
+app.get('/api/users', async (req, res) => {
+  try {
+    const users = [
+      { id: 1, email: 'john@example.com', name: 'John Doe', status: 'active' },
+      { id: 2, email: 'jane@example.com', name: 'Jane Smith', status: 'active' },
+      { id: 3, email: 'bob@example.com', name: 'Bob Wilson', status: 'inactive' }
+    ];
+    res.json({ users, count: users.length });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch users', details: error.message });
+  }
+});
+
+// Create order
+app.post('/api/orders', async (req, res) => {
+  try {
+    const response = await axios.post(`${services['order-service']}/orders`, req.body, { timeout: 10000 });
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create order', details: error.message });
+  }
+});
+
 const PORT = process.env.PORT || 3006;
 app.listen(PORT, () => {
   console.log(`🌐 Frontend Service running on port ${PORT}`);
