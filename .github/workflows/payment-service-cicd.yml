@@ -40,7 +40,8 @@ jobs:
     - uses: actions/checkout@v4
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-    - run: sed -i "s|tag: \".*\"|tag: \"${{ needs.build-and-push.outputs.image-tag }}\"|g" apps/payment-service/values.yaml
+    - run: |
+        sed -i "s|tag: \".*\"|tag: \"${{ needs.build-and-push.outputs.image-tag }}\"|g" apps/payment-service/values.yaml
     - run: |
         git config --local user.name "github-actions[bot]"
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
