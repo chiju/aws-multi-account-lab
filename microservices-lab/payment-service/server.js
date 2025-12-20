@@ -47,7 +47,7 @@ app.use((req, res, next) => {
 // Metrics endpoint
 app.get('/metrics', (req, res) => {
   res.set('Content-Type', register.contentType);
-  res.end(register.metrics());
+  register.metrics().then(metrics => res.end(metrics));
 });
 
 // Mock payments database
