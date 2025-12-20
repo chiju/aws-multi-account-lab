@@ -1,0 +1,49 @@
+name: Notification Service CI/CD
+
+on:
+  workflow_dispatch:
+
+env:
+  AWS_REGION: eu-central-1
+  ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID_DEV }}.dkr.ecr.eu-central-1.amazonaws.com
+  IMAGE_NAME: tbyte-dev-notification-service
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tag }}
+    steps:
+    - uses: actions/checkout@v4
+    - uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_ARN_DEV }}
+        aws-region: ${{ env.AWS_REGION }}
+    - uses: aws-actions/amazon-ecr-login@v2
+    - id: meta
+      run: echo "tag=${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
+    - working-directory: microservices-lab/notification-service
+      run: |
+        docker build -t $ECR_REGISTRY/$IMAGE_NAME:${{ steps.meta.outputs.tag }} .
+        docker build -t $ECR_REGISTRY/$IMAGE_NAME:latest .
+        docker push $ECR_REGISTRY/$IMAGE_NAME:${{ steps.meta.outputs.tag }}
+        docker push $ECR_REGISTRY/$IMAGE_NAME:latest
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - run: sed -i "s|tag: \".*\"|tag: \"${{ needs.build-and-push.outputs.image-tag }}\"|g" apps/notification-service/values.yaml
+    - run: |
+        git config --local user.name "github-actions[bot]"
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git add apps/notification-service/values.yaml
+        git commit -m "🚀 Deploy Notification Service ${{ needs.build-and-push.outputs.image-tag }}" || exit 0
+        git push

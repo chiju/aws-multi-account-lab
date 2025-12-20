@@ -1,0 +1,25 @@
+replicaCount: 2
+
+image:
+  repository: 575491070504.dkr.ecr.eu-central-1.amazonaws.com/tbyte-dev-user-service
+  tag: "latest"
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3001
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70

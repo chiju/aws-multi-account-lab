@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+  namespace: order-service
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+  - port: {{ .Values.service.port }}
+    targetPort: {{ .Values.service.targetPort }}
+    protocol: TCP
+  selector:
+    app: order-service
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: order-service-vs
+  namespace: order-service
+spec:
+  hosts:
+  - "microservices.local"
+  gateways:
+  - istio-system/common-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /orders
+    route:
+    - destination:
+        host: order-service.order-service.svc.cluster.local
+        port:
+          number: 80
