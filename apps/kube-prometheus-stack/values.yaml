@@ -62,7 +62,7 @@ kube-prometheus-stack:
           nodeGraph:
             enabled: true
           serviceMap:
-            enabled: true
+            datasourceUid: tempo-service-graph
           search:
             hide: false
           traceQuery:
@@ -72,6 +72,12 @@ kube-prometheus-stack:
           spanBar:
             type: Tag
             tag: http.status_code
+      - name: Tempo Service Graph
+        uid: tempo-service-graph
+        type: prometheus
+        url: http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+        access: proxy
+        isDefault: false
       - name: CloudWatch
         type: cloudwatch
         access: proxy
