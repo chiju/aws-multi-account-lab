@@ -11,6 +11,15 @@ external-secrets:
   # Controller configuration
   replicaCount: 1
   
+  # Schedule on system nodes
+  tolerations:
+    - key: "node-type"
+      operator: "Equal"
+      value: "system"
+      effect: "NoSchedule"
+  nodeSelector:
+    eks.amazonaws.com/nodegroup: "tbyte-dev-system-nodes"
+  
   resources:
     requests:
       cpu: 100m

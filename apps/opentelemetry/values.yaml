@@ -1,5 +1,14 @@
 # OpenTelemetry Operator Configuration
 manager:
+  # Schedule on system nodes
+  tolerations:
+    - key: "node-type"
+      operator: "Equal"
+      value: "system"
+      effect: "NoSchedule"
+  nodeSelector:
+    eks.amazonaws.com/nodegroup: "tbyte-dev-system-nodes"
+  
   resources:
     limits:
       cpu: 100m

@@ -25,6 +25,14 @@ loki:
             period: 24h
   singleBinary:
     replicas: 1
+    # Schedule on system nodes
+    tolerations:
+      - key: "node-type"
+        operator: "Equal"
+        value: "system"
+        effect: "NoSchedule"
+    nodeSelector:
+      eks.amazonaws.com/nodegroup: "tbyte-dev-system-nodes"
     persistence:
       enabled: false
   read:

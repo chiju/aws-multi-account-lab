@@ -1,6 +1,14 @@
 kube-prometheus-stack:
   prometheus:
     prometheusSpec:
+      # Schedule on system nodes
+      tolerations:
+        - key: "node-type"
+          operator: "Equal"
+          value: "system"
+          effect: "NoSchedule"
+      nodeSelector:
+        eks.amazonaws.com/nodegroup: "tbyte-dev-system-nodes"
       retention: 15d
       retentionSize: 45GB
       # Enable remote write receiver for Tempo metrics generator
@@ -28,6 +36,14 @@ kube-prometheus-stack:
           release: monitoring
   grafana:
     enabled: true
+    # Schedule on system nodes
+    tolerations:
+      - key: "node-type"
+        operator: "Equal"
+        value: "system"
+        effect: "NoSchedule"
+    nodeSelector:
+      eks.amazonaws.com/nodegroup: "tbyte-dev-system-nodes"
     admin:
       existingSecret: grafana-admin-secret
       userKey: admin-user
@@ -98,13 +114,27 @@ kube-prometheus-stack:
             - name: "/aws/vpc/flowlogs/eks-lab-argocd"
         isDefault: false
   
-  # Node exporter with high priority
+  # Node exporter with high priority and system node scheduling
   prometheus-node-exporter:
     priorityClassName: system-node-critical
+    tolerations:
+      - key: "node-type"
+        operator: "Equal"
+        value: "system"
+        effect: "NoSchedule"
+      # Also tolerate all taints to run on all nodes for monitoring
+      - operator: "Exists"
   
-  # AlertManager with persistence
+  # AlertManager with persistence and system node scheduling
   alertmanager:
     alertmanagerSpec:
+      tolerations:
+        - key: "node-type"
+          operator: "Equal"
+          value: "system"
+          effect: "NoSchedule"
+      nodeSelector:
+        eks.amazonaws.com/nodegroup: "tbyte-dev-system-nodes"
       storage:
         volumeClaimTemplate:
           spec:
