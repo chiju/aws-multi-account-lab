@@ -6,6 +6,14 @@ tolerations:
     value: "system"
     effect: "NoSchedule"
 
+# Operator specific tolerations
+operator:
+  tolerations:
+    - key: "node-type"
+      operator: "Equal"
+      value: "system"
+      effect: "NoSchedule"
+
 manager:
   # Schedule on system nodes
   tolerations:
