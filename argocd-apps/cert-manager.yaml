@@ -18,7 +18,24 @@ spec:
       - name: global.leaderElection.namespace
         value: cert-manager
       values: |
-        global:
+        tolerations:
+          - key: "node-type"
+            operator: "Equal"
+            value: "system"
+            effect: "NoSchedule"
+        webhook:
+          tolerations:
+            - key: "node-type"
+              operator: "Equal"
+              value: "system"
+              effect: "NoSchedule"
+        cainjector:
+          tolerations:
+            - key: "node-type"
+              operator: "Equal"
+              value: "system"
+              effect: "NoSchedule"
+        startupapicheck:
           tolerations:
             - key: "node-type"
               operator: "Equal"
