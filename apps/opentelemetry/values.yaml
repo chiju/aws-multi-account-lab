@@ -1,29 +1,17 @@
 # OpenTelemetry Operator Configuration
-# Global tolerations
+# Root level tolerations (correct placement for operator pod)
 tolerations:
   - key: "node-type"
     operator: "Equal"
     value: "system"
     effect: "NoSchedule"
 
-# Operator specific tolerations
-operator:
-  tolerations:
-    - key: "node-type"
-      operator: "Equal"
-      value: "system"
-      effect: "NoSchedule"
+# Node selector for system nodes
+nodeSelector:
+  eks.amazonaws.com/nodegroup: "tbyte-dev-system-nodes"
 
+# Manager container resources
 manager:
-  # Schedule on system nodes
-  tolerations:
-    - key: "node-type"
-      operator: "Equal"
-      value: "system"
-      effect: "NoSchedule"
-  nodeSelector:
-    eks.amazonaws.com/nodegroup: "tbyte-dev-system-nodes"
-  
   resources:
     limits:
       cpu: 100m
