@@ -78,4 +78,5 @@ jobs:
           - Repository: ${{ env.ECR_REGISTRY }}/${{ env.IMAGE_NAME }}
           - Trigger ArgoCD sync for deployment" || exit 0
           
+          git pull origin main --rebase
           git push
