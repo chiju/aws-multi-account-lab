@@ -11,6 +11,13 @@ tempo:
       operator: "Equal"
       value: "system"
       effect: "NoSchedule"
+  # StatefulSet tolerations
+  statefulSet:
+    tolerations:
+      - key: "node-type"
+        operator: "Equal"
+        value: "system"
+        effect: "NoSchedule"
   # Override configuration to enable metrics generator
   config: |
     multitenancy_enabled: false
