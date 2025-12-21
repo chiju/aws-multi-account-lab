@@ -53,3 +53,9 @@ loki:
     enabled: false
   resultsCache:
     enabled: false
+  gateway:
+    tolerations:
+      - key: "node-type"
+        operator: "Equal"
+        value: "system"
+        effect: "NoSchedule"
