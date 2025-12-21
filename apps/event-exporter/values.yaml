@@ -5,6 +5,13 @@ image:
 
 lokiUrl: http://loki-gateway.loki.svc.cluster.local/loki/api/v1/push
 
+# Schedule on system nodes
+tolerations:
+  - key: "node-type"
+    operator: "Equal"
+    value: "system"
+    effect: "NoSchedule"
+
 resources:
   limits:
     cpu: 100m
