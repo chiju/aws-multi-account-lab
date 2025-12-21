@@ -1,0 +1,103 @@
+name: Trigger All Services
+
+on:
+  workflow_dispatch:
+    inputs:
+      trigger_text:
+        description: 'Type "all" to trigger all service workflows'
+        required: true
+        type: string
+
+jobs:
+  trigger-services:
+    if: inputs.trigger_text == 'all'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Trigger Frontend Service
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'frontend-service-cicd.yml',
+              ref: 'main'
+            });
+
+      - name: Trigger User Service
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'user-service-cicd.yml',
+              ref: 'main'
+            });
+
+      - name: Trigger Order Service
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'order-service-cicd.yml',
+              ref: 'main'
+            });
+
+      - name: Trigger Payment Service
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'payment-service-cicd.yml',
+              ref: 'main'
+            });
+
+      - name: Trigger Inventory Service
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'inventory-service-cicd.yml',
+              ref: 'main'
+            });
+
+      - name: Trigger Notification Service
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'notification-service-cicd.yml',
+              ref: 'main'
+            });
+
+      - name: Trigger X-Clone Service
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'x-clone-cicd.yml',
+              ref: 'main'
+            });
+
+      - name: Trigger TByte Service
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'tbyte-cicd.yml',
+              ref: 'main'
+            });
