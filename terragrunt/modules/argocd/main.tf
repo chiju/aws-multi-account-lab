@@ -16,6 +16,13 @@ resource "helm_release" "argocd" {
 
   values = var.enable_ha ? [
     yamlencode({
+      global = {
+        tolerations = [{
+          key    = "node-type"
+          value  = "system"
+          effect = "NoSchedule"
+        }]
+      }
       controller = {
         replicas = 2
         tolerations = [{
@@ -51,6 +58,13 @@ resource "helm_release" "argocd" {
     })
     ] : [
     yamlencode({
+      global = {
+        tolerations = [{
+          key    = "node-type"
+          value  = "system"
+          effect = "NoSchedule"
+        }]
+      }
       configs = {
         cm = {
           "timeout.reconciliation" = "5s"
