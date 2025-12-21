@@ -69,15 +69,12 @@ jobs:
         working-directory: terragrunt/infrastructure/dev
         run: |
           echo "Starting infrastructure destruction..."
-          # Use run-all destroy with better error handling
           terragrunt run-all destroy --terragrunt-non-interactive --terragrunt-ignore-dependency-errors || {
             echo "First destroy attempt failed, trying individual module cleanup..."
-            
-            # Try to destroy modules individually in reverse dependency order
             for module in argocd iam ecr secrets rds eks vpc; do
               if [ -d "$module" ]; then
                 echo "Attempting to destroy $module..."
-                cd "$module" && terragrunt destroy --auto-approve --terragrunt-non-interactive || echo "Failed to destroy $module, continuing..."
+                cd "$module" && terragrunt destroy --terragrunt-non-interactive || echo "Failed to destroy $module, continuing..."
                 cd ..
               fi
             done
