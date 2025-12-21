@@ -11,23 +11,8 @@ external-secrets:
   # Controller configuration
   replicaCount: 1
   
-  # Schedule on system nodes
-  tolerations:
-    - key: "node-type"
-      operator: "Equal"
-      value: "system"
-      effect: "NoSchedule"
-  
-  # Cert controller tolerations
-  certController:
-    tolerations:
-      - key: "node-type"
-        operator: "Equal"
-        value: "system"
-        effect: "NoSchedule"
-  
-  # Webhook tolerations
-  webhook:
+  # Global tolerations for all components
+  global:
     tolerations:
       - key: "node-type"
         operator: "Equal"
