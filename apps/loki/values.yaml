@@ -1,5 +1,13 @@
 loki:
   deploymentMode: SingleBinary
+  
+  # Global tolerations for all components
+  global:
+    tolerations:
+      - key: "node-type"
+        operator: "Equal"
+        value: "system"
+        effect: "NoSchedule"
   loki:
     auth_enabled: false
     commonConfig:
