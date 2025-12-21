@@ -26,8 +26,8 @@ inputs = {
   private_subnet_ids = dependency.vpc.outputs.private_subnet_ids
   public_subnet_ids  = dependency.vpc.outputs.public_subnet_ids
   
-  node_instance_types = ["t3.medium"]
-  node_desired_size   = 4
-  node_min_size       = 4
-  node_max_size       = 4
+  node_instance_type = "t3.xlarge"
+  desired_nodes      = 3
+  min_nodes          = 3
+  max_nodes          = 5
 }
