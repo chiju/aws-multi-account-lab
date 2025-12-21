@@ -165,6 +165,7 @@ jobs:
           - Actor: ${{ github.actor }}
           - Workflow: ${{ github.run_id }}" || exit 0
           
+          git pull --rebase origin main
           git push origin main
 
       - name: Create GitHub Deployment
