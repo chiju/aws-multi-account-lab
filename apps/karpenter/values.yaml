@@ -2,18 +2,9 @@
 # Do not edit manually - changes will be overwritten
 
 karpenter:
-  # Schedule Karpenter on system nodes
-  tolerations:
-    - key: "node-type"
-      operator: "Equal"
-      value: "system"
-      effect: "NoSchedule"
-  nodeSelector:
-    eks.amazonaws.com/nodegroup: "tbyte-dev-system-nodes"
-  
   settings:
     clusterName: tbyte-dev
-    clusterEndpoint: https://17D21E3DEDA862D807D41924FF4CFFFA.gr7.eu-central-1.eks.amazonaws.com
+    clusterEndpoint: https://AC8EB20BED07CB142422D0F94D572F9C.gr7.eu-central-1.eks.amazonaws.com
     interruptionQueue: 
   
   serviceAccount:
