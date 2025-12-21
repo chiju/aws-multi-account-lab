@@ -217,6 +217,14 @@ resource "aws_eks_addon" "coredns" {
   addon_name                  = "coredns"
   addon_version               = "v1.11.3-eksbuild.2"
   resolve_conflicts_on_create = "OVERWRITE"
+  
+  configuration_values = jsonencode({
+    tolerations = [{
+      key    = "node-type"
+      value  = "system"
+      effect = "NoSchedule"
+    }]
+  })
 
   depends_on = [
     aws_eks_node_group.system_nodes
@@ -246,6 +254,14 @@ resource "aws_eks_addon" "metrics_server" {
   cluster_name                = aws_eks_cluster.eks_cluster_lrn.name
   addon_name                  = "metrics-server"
   resolve_conflicts_on_create = "OVERWRITE"
+  
+  configuration_values = jsonencode({
+    tolerations = [{
+      key    = "node-type"
+      value  = "system"
+      effect = "NoSchedule"
+    }]
+  })
 
   depends_on = [
     aws_eks_node_group.system_nodes
@@ -262,6 +278,16 @@ resource "aws_eks_addon" "ebs_csi_driver" {
   addon_name                  = "aws-ebs-csi-driver"
   resolve_conflicts_on_create = "OVERWRITE"
   service_account_role_arn    = aws_iam_role.ebs_csi_driver_role.arn
+  
+  configuration_values = jsonencode({
+    controller = {
+      tolerations = [{
+        key    = "node-type"
+        value  = "system"
+        effect = "NoSchedule"
+      }]
+    }
+  })
 
   depends_on = [
     aws_eks_node_group.system_nodes,
