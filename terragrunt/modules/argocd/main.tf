@@ -18,13 +18,35 @@ resource "helm_release" "argocd" {
     yamlencode({
       controller = {
         replicas = 2
+        tolerations = [{
+          key    = "node-type"
+          value  = "system"
+          effect = "NoSchedule"
+        }]
       }
       server = {
         replicas = 2
         extraArgs = ["--insecure"]
+        tolerations = [{
+          key    = "node-type"
+          value  = "system"
+          effect = "NoSchedule"
+        }]
       }
       repoServer = {
         replicas = 2
+        tolerations = [{
+          key    = "node-type"
+          value  = "system"
+          effect = "NoSchedule"
+        }]
+      }
+      redis = {
+        tolerations = [{
+          key    = "node-type"
+          value  = "system"
+          effect = "NoSchedule"
+        }]
       }
     })
     ] : [
@@ -36,6 +58,32 @@ resource "helm_release" "argocd" {
       }
       server = {
         extraArgs = ["--insecure"]
+        tolerations = [{
+          key    = "node-type"
+          value  = "system"
+          effect = "NoSchedule"
+        }]
+      }
+      controller = {
+        tolerations = [{
+          key    = "node-type"
+          value  = "system"
+          effect = "NoSchedule"
+        }]
+      }
+      repoServer = {
+        tolerations = [{
+          key    = "node-type"
+          value  = "system"
+          effect = "NoSchedule"
+        }]
+      }
+      redis = {
+        tolerations = [{
+          key    = "node-type"
+          value  = "system"
+          effect = "NoSchedule"
+        }]
       }
     })
   ]
