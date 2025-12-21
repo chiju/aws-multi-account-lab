@@ -17,6 +17,22 @@ external-secrets:
       operator: "Equal"
       value: "system"
       effect: "NoSchedule"
+  
+  # Cert controller tolerations
+  certController:
+    tolerations:
+      - key: "node-type"
+        operator: "Equal"
+        value: "system"
+        effect: "NoSchedule"
+  
+  # Webhook tolerations
+  webhook:
+    tolerations:
+      - key: "node-type"
+        operator: "Equal"
+        value: "system"
+        effect: "NoSchedule"
   nodeSelector:
     eks.amazonaws.com/nodegroup: "tbyte-dev-system-nodes"
   
