@@ -6,6 +6,17 @@ kube-prometheus-stack:
         operator: "Equal"
         value: "system"
         effect: "NoSchedule"
+  
+  # Admission webhook tolerations
+  prometheusOperator:
+    admissionWebhooks:
+      patch:
+        tolerations:
+          - key: "node-type"
+            operator: "Equal"
+            value: "system"
+            effect: "NoSchedule"
+  
   prometheus:
     prometheusSpec:
       # Schedule on system nodes
