@@ -12,15 +12,15 @@ spec:
   {{- end }}
   strategy:
     canary:
+      maxSurge: "25%"
+      maxUnavailable: 0
       steps:
-      - setWeight: 10
-      - pause: {duration: 30s}
       - setWeight: 25
-      - pause: {duration: 30s}
+      - pause: {duration: 10s}
       - setWeight: 50
-      - pause: {duration: 30s}
+      - pause: {duration: 10s}
       - setWeight: 75
-      - pause: {duration: 30s}
+      - pause: {duration: 10s}
       canaryService: {{ include "tbyte-microservices.fullname" . }}-frontend-canary
       stableService: {{ include "tbyte-microservices.fullname" . }}-frontend
       trafficRouting:
