@@ -10,3 +10,8 @@ istiod:
   pilot:
     env:
       EXTERNAL_ISTIOD: false
+    tolerations:
+      - key: "node-type"
+        operator: "Equal"
+        value: "system"
+        effect: "NoSchedule"

@@ -1,4 +1,9 @@
 keda:
+  tolerations:
+    - key: "node-type"
+      operator: "Equal"
+      value: "system"
+      effect: "NoSchedule"
   resources:
     operator:
       limits:

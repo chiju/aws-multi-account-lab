@@ -15,10 +15,20 @@ spec:
       values: |
         controller:
           replicas: 1
+          tolerations:
+            - key: "node-type"
+              operator: "Equal"
+              value: "system"
+              effect: "NoSchedule"
         dashboard:
           enabled: true
           service:
             type: LoadBalancer
+          tolerations:
+            - key: "node-type"
+              operator: "Equal"
+              value: "system"
+              effect: "NoSchedule"
   destination:
     server: https://kubernetes.default.svc
     namespace: argo-rollouts

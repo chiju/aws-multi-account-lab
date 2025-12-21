@@ -17,3 +17,8 @@ kiali-server:
   deployment:
     ingress:
       enabled: false
+    tolerations:
+      - key: "node-type"
+        operator: "Equal"
+        value: "system"
+        effect: "NoSchedule"
