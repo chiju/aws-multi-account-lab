@@ -9,6 +9,11 @@ kube-prometheus-stack:
   
   # Admission webhook tolerations
   prometheusOperator:
+    tolerations:
+      - key: "node-type"
+        operator: "Equal"
+        value: "system"
+        effect: "NoSchedule"
     admissionWebhooks:
       patch:
         tolerations:
@@ -16,6 +21,14 @@ kube-prometheus-stack:
             operator: "Equal"
             value: "system"
             effect: "NoSchedule"
+  
+  # Kube-state-metrics tolerations
+  kube-state-metrics:
+    tolerations:
+      - key: "node-type"
+        operator: "Equal"
+        value: "system"
+        effect: "NoSchedule"
   
   prometheus:
     prometheusSpec:
