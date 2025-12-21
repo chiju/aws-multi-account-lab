@@ -1,4 +1,11 @@
 kube-prometheus-stack:
+  # Global tolerations for all components
+  global:
+    tolerations:
+      - key: "node-type"
+        operator: "Equal"
+        value: "system"
+        effect: "NoSchedule"
   prometheus:
     prometheusSpec:
       # Schedule on system nodes
