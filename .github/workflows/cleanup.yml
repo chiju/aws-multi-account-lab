@@ -69,7 +69,7 @@ jobs:
         working-directory: terragrunt/infrastructure/dev
         run: |
           echo "Starting infrastructure destruction..."
-          terragrunt run-all destroy --non-interactive --terragrunt-ignore-dependency-errors || {
+          terragrunt run --all destroy --non-interactive || {
             echo "First destroy attempt failed, trying individual module cleanup..."
             for module in argocd iam ecr secrets rds eks vpc; do
               if [ -d "$module" ]; then
