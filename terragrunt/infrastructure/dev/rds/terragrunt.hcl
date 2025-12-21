@@ -14,7 +14,7 @@ dependency "vpc" {
     vpc_cidr           = "10.0.0.0/16"
     private_subnet_ids = ["subnet-mock-1", "subnet-mock-2"]
   }
-  mock_outputs_allowed_terraform_commands = ["plan", "validate"]
+  mock_outputs_allowed_terraform_commands = ["plan", "validate", "destroy"]
 }
 
 dependency "eks" {
@@ -23,7 +23,7 @@ dependency "eks" {
   mock_outputs = {
     cluster_name = "tbyte-dev"
   }
-  mock_outputs_allowed_terraform_commands = ["plan", "validate"]
+  mock_outputs_allowed_terraform_commands = ["plan", "validate", "destroy"]
 }
 
 inputs = {

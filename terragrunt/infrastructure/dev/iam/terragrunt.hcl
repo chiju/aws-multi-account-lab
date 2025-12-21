@@ -13,7 +13,7 @@ dependency "eks" {
     cluster_name           = "tbyte-dev"
     cluster_oidc_issuer_url = "https://oidc.eks.eu-central-1.amazonaws.com/id/MOCK"
   }
-  mock_outputs_allowed_terraform_commands = ["plan", "validate"]
+  mock_outputs_allowed_terraform_commands = ["plan", "validate", "destroy"]
 }
 
 dependency "rds" {
@@ -22,7 +22,7 @@ dependency "rds" {
   mock_outputs = {
     secret_arn = "arn:aws:secretsmanager:eu-central-1:575491070504:secret:mock-secret"
   }
-  mock_outputs_allowed_terraform_commands = ["plan", "validate"]
+  mock_outputs_allowed_terraform_commands = ["plan", "validate", "destroy"]
 }
 
 inputs = {

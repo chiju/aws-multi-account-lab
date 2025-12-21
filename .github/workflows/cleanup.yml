@@ -46,12 +46,42 @@ jobs:
       - name: Empty ECR Repositories
         run: |
           echo "Emptying ECR repositories..."
-          aws ecr list-images --repository-name tbyte-dev-frontend --query 'imageIds[*]' --output json | jq '.[] | select(.imageTag != null) | {imageTag}' | aws ecr batch-delete-image --repository-name tbyte-dev-frontend --image-ids file:///dev/stdin || true
-          aws ecr list-images --repository-name tbyte-dev-backend --query 'imageIds[*]' --output json | jq '.[] | select(.imageTag != null) | {imageTag}' | aws ecr batch-delete-image --repository-name tbyte-dev-backend --image-ids file:///dev/stdin || true
+          # Check if repositories exist before trying to empty them
+          if aws ecr describe-repositories --repository-names tbyte-dev-frontend --region ${{ env.AWS_REGION }} >/dev/null 2>&1; then
+            echo "Emptying tbyte-dev-frontend repository..."
+            aws ecr list-images --repository-name tbyte-dev-frontend --query 'imageIds[*]' --output json | \
+            jq '.[] | select(.imageTag != null) | {imageTag}' | \
+            aws ecr batch-delete-image --repository-name tbyte-dev-frontend --image-ids file:///dev/stdin || true
+          else
+            echo "Repository tbyte-dev-frontend does not exist or already deleted"
+          fi
+          
+          if aws ecr describe-repositories --repository-names tbyte-dev-backend --region ${{ env.AWS_REGION }} >/dev/null 2>&1; then
+            echo "Emptying tbyte-dev-backend repository..."
+            aws ecr list-images --repository-name tbyte-dev-backend --query 'imageIds[*]' --output json | \
+            jq '.[] | select(.imageTag != null) | {imageTag}' | \
+            aws ecr batch-delete-image --repository-name tbyte-dev-backend --image-ids file:///dev/stdin || true
+          else
+            echo "Repository tbyte-dev-backend does not exist or already deleted"
+          fi
 
       - name: Destroy All Infrastructure
         working-directory: terragrunt/infrastructure/dev
-        run: terragrunt destroy --all --auto-approve --non-interactive
+        run: |
+          echo "Starting infrastructure destruction..."
+          # Use run-all destroy with better error handling
+          terragrunt run-all destroy --terragrunt-non-interactive --terragrunt-ignore-dependency-errors || {
+            echo "First destroy attempt failed, trying individual module cleanup..."
+            
+            # Try to destroy modules individually in reverse dependency order
+            for module in argocd iam ecr secrets rds eks vpc; do
+              if [ -d "$module" ]; then
+                echo "Attempting to destroy $module..."
+                cd "$module" && terragrunt destroy --auto-approve --terragrunt-non-interactive || echo "Failed to destroy $module, continuing..."
+                cd ..
+              fi
+            done
+          }
         env:
           TF_VAR_skip_secret_lookup: "true"
 
