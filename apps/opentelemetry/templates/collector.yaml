@@ -4,6 +4,19 @@ metadata:
   name: microservices
   namespace: opentelemetry
 spec:
+  tolerations:
+    - key: "node-type"
+      operator: "Equal"
+      value: "application"
+      effect: "NoSchedule"
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          preference:
+            matchExpressions:
+              - key: "karpenter.sh/nodepool"
+                operator: "Exists"
   config:
     receivers:
       otlp:
