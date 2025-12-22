@@ -24,6 +24,12 @@ opencost:
         memory: "55Mi"
       limits:
         memory: "1Gi"
+
+  # UI Configuration
+  ui:
+    enabled: true
+    image:
+      tag: "1.119.0"
     
     # Resource requests and limits
     resources:
