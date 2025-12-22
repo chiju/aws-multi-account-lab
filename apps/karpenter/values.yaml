@@ -4,13 +4,13 @@
 karpenter:
   settings:
     clusterName: tbyte-dev
-    clusterEndpoint: https://AC8EB20BED07CB142422D0F94D572F9C.gr7.eu-central-1.eks.amazonaws.com
+    clusterEndpoint: https://DE2E6740C8935668249A93E729F9BB2C.gr7.eu-central-1.eks.amazonaws.com
     interruptionQueue: 
   
   serviceAccount:
     annotations:
       eks.amazonaws.com/role-arn: arn:aws:iam::575491070504:role/KarpenterControllerRole-tbyte-dev
-
+  
   tolerations:
     - effect: NoSchedule
       key: node-type
