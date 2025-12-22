@@ -77,7 +77,7 @@ jobs:
           echo "tag=$TAG" >> $GITHUB_OUTPUT
 
       - name: Build and Push X Clone Image
-        working-directory: x_clone
+        working-directory: microservices-lab/xclone-service
         run: |
           # Build the Docker image with specific tag
           docker build -t $ECR_REGISTRY/$IMAGE_NAME:${{ steps.meta.outputs.tag }} .

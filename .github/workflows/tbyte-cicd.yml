@@ -101,7 +101,7 @@ jobs:
       - name: Build Frontend Image
         uses: docker/build-push-action@v5
         with:
-          context: src/frontend
+          context: microservices-lab/tbyte-service/frontend
           push: false
           tags: ${{ env.ECR_REGISTRY }}/tbyte-dev-frontend:${{ steps.meta.outputs.tag }}
           load: true
@@ -109,7 +109,7 @@ jobs:
       - name: Build Backend Image
         uses: docker/build-push-action@v5
         with:
-          context: src/backend
+          context: microservices-lab/tbyte-service/backend
           push: false
           tags: ${{ env.ECR_REGISTRY }}/tbyte-dev-backend:${{ steps.meta.outputs.tag }}
           load: true
