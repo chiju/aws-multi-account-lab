@@ -1,7 +1,9 @@
-# OpenCost Configuration for AWS EKS - External Prometheus (Working Method)
+# OpenCost Configuration - Production Template
 opencost:
   exporter:
     defaultClusterId: tbyte-dev
+    env:
+      PROMETHEUS_SERVER_ENDPOINT: "http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090"
   prometheus:
     external:
       enabled: true
