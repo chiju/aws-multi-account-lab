@@ -10,11 +10,32 @@ istiod:
   pilot:
     env:
       EXTERNAL_ISTIOD: false
-    # Set webhook failure policy to Fail (production setting)
-    webhooks:
-      failurePolicy: Fail
     tolerations:
       - key: "node-type"
         operator: "Equal"
         value: "system"
         effect: "NoSchedule"
+
+# Mesh configuration with OpenTelemetry
+meshConfig:
+  defaultConfig:
+    discoveryAddress: istiod.istio-system.svc:15012
+    metrics:
+      - prometheus
+    tracing:
+      - otel
+  enablePrometheusMerge: true
+  extensionProviders:
+    - name: otel
+      envoyOtelAls:
+        service: tbyte-collector.opentelemetry.svc.cluster.local
+        port: 4317
+  rootNamespace: istio-system
+  trustDomain: cluster.local
+
+# Set webhook failure policy to Fail (production setting)
+pilot:
+  env:
+    EXTERNAL_ISTIOD: false
+  webhooks:
+    failurePolicy: Fail
