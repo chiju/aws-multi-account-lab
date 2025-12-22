@@ -11,19 +11,16 @@ opencost:
   exporter:
     env:
       PROMETHEUS_SERVER_ENDPOINT: "http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090"
-
-  # Data retention settings
-  dataRetention:
-    dailyResolutionDays: 30
-
-  # Exporter configuration
-  exporter:
     defaultClusterId: tbyte-dev
     replicas: 1
     
     # Use latest OpenCost application version
     image:
       tag: "1.119.0"
+
+  # Data retention settings
+  dataRetention:
+    dailyResolutionDays: 30
     
     # Resource requests and limits
     resources:
