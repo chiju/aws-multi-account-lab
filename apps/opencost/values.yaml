@@ -1,10 +1,11 @@
-# OpenCost Configuration - Direct Environment Override
+# OpenCost Configuration - Global Environment Override
+global:
+  env:
+    PROMETHEUS_SERVER_ENDPOINT: "http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090"
+
 opencost:
   exporter:
     defaultClusterId: tbyte-dev
-    env:
-      - name: PROMETHEUS_SERVER_ENDPOINT
-        value: "http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090"
 
 serviceAccount:
   create: true
