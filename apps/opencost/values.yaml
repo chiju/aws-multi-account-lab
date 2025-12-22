@@ -1,0 +1,96 @@
+# OpenCost Configuration for AWS EKS
+
+opencost:
+  # Prometheus integration with existing monitoring stack
+  prometheus:
+    internal:
+      namespaceName: monitoring
+      serviceName: monitoring-kube-prometheus-prometheus
+      port: 9090
+
+  # Data retention settings
+  dataRetention:
+    dailyResolutionDays: 30
+
+  # Exporter configuration
+  exporter:
+    defaultClusterId: tbyte-dev
+    replicas: 1
+    
+    # Use latest OpenCost application version
+    image:
+      tag: "1.119.0"
+    
+    # Resource requests and limits
+    resources:
+      requests:
+        cpu: "10m"
+        memory: "55Mi"
+      limits:
+        memory: "1Gi"
+    
+    # Persistence for cost data
+    persistence:
+      enabled: true
+      storageClass: "gp3"
+      accessMode: ReadWriteOnce
+      size: 5Gi
+    
+    # Node tolerations for system nodes
+    tolerations:
+      - key: "node-type"
+        operator: "Equal"
+        value: "system"
+        effect: "NoSchedule"
+    
+    # Node affinity for system nodes
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+                - key: "eks.amazonaws.com/nodegroup"
+                  operator: "In"
+                  values: ["tbyte-dev-system-nodes"]
+
+  # AWS pricing configuration - use dynamic pricing
+  customPricing:
+    enabled: false  # Let OpenCost use AWS Pricing API automatically
+    provider: aws
+
+  # Metrics configuration
+  metrics:
+    kubeStateMetrics:
+      emitKsmV1Metrics: false
+      emitKsmV1MetricsOnly: false
+    serviceMonitor:
+      enabled: true
+      additionalLabels:
+        release: monitoring
+
+  # Enable UI
+  ui:
+    enabled: true
+    
+    # Use latest OpenCost UI version
+    image:
+      tag: "1.119.0"
+    
+    # UI tolerations for system nodes
+    tolerations:
+      - key: "node-type"
+        operator: "Equal"
+        value: "system"
+        effect: "NoSchedule"
+    
+    # UI node affinity for system nodes
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+                - key: "eks.amazonaws.com/nodegroup"
+                  operator: "In"
+                  values: ["tbyte-dev-system-nodes"]

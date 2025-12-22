@@ -1,0 +1,8 @@
+apiVersion: v2
+name: opencost
+description: OpenCost - Kubernetes cost monitoring
+version: 1.0.0
+dependencies:
+  - name: opencost
+    version: "2.4.1"
+    repository: https://opencost.github.io/opencost-helm-chart

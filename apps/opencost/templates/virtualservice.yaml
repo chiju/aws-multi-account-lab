@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: opencost-vs
+  namespace: opencost
+spec:
+  gateways:
+    - istio-system/common-gateway
+  hosts:
+    - opencost.local
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: opencost
+            port:
+              number: 9090
