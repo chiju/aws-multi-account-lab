@@ -1,38 +1,14 @@
-# OpenCost Configuration for AWS EKS
-
+# Minimal OpenCost Configuration
 opencost:
-  # Prometheus integration with existing monitoring stack
   prometheus:
     internal:
+      enabled: true
       namespaceName: monitoring
       serviceName: monitoring-kube-prometheus-prometheus
       port: 9090
-
-  # Data retention settings
-  dataRetention:
-    dailyResolutionDays: 30
-
+  
   exporter:
     defaultClusterId: tbyte-dev
-    replicas: 1
-    
-    # Use latest OpenCost application version
-    image:
-      tag: "1.119.0"
-    
-    # Resource requests and limits
-    resources:
-      requests:
-        cpu: "10m"
-        memory: "55Mi"
-      limits:
-        memory: "1Gi"
-
-  # UI Configuration
-  ui:
-    enabled: true
-    image:
-      tag: "1.119.0"
     
     # Resource requests and limits
     resources:

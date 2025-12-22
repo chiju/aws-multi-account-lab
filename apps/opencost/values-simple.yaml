@@ -1,0 +1,11 @@
+# Minimal OpenCost Configuration
+opencost:
+  prometheus:
+    internal:
+      enabled: true
+      namespaceName: monitoring
+      serviceName: monitoring-kube-prometheus-prometheus
+      port: 9090
+  
+  exporter:
+    defaultClusterId: tbyte-dev
