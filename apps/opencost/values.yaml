@@ -4,10 +4,13 @@ opencost:
   # Prometheus integration with existing monitoring stack
   prometheus:
     internal:
-      enabled: true
-      serviceName: monitoring-kube-prometheus-prometheus
       namespaceName: monitoring
+      serviceName: monitoring-kube-prometheus-prometheus
       port: 9090
+
+  # Data retention settings
+  dataRetention:
+    dailyResolutionDays: 30
 
   exporter:
     defaultClusterId: tbyte-dev
