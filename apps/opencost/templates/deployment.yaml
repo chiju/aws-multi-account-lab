@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opencost
+  namespace: opencost
+  labels:
+    app: opencost
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: opencost
+  template:
+    metadata:
+      labels:
+        app: opencost
+    spec:
+      serviceAccountName: opencost
+      containers:
+      - name: opencost
+        image: ghcr.io/opencost/opencost:1.117.6
+        env:
+        - name: PROMETHEUS_SERVER_ENDPOINT
+          value: "http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090"
+        - name: CLUSTER_ID
+          value: "{{ .Values.opencost.exporter.defaultClusterId }}"
+        - name: CLOUD_PROVIDER_API_KEY
+          value: "AIzaSyD29bGxmHAVEOBYtgd8sYM2uOEiG-qd2jI" # Default OpenCost key
+        ports:
+        - containerPort: 9003
+          name: http
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 9003
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 9003
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          requests:
+            cpu: 10m
+            memory: 55Mi
+          limits:
+            cpu: 999m
+            memory: 1Gi
+      - name: opencost-ui
+        image: ghcr.io/opencost/opencost-ui:1.117.6
+        ports:
+        - containerPort: 9090
+          name: http-ui
+        resources:
+          requests:
+            cpu: 10m
+            memory: 55Mi
+          limits:
+            cpu: 999m
+            memory: 1Gi
