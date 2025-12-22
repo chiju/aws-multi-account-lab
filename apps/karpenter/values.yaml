@@ -1,0 +1,12 @@
+# Auto-generated from Terragrunt outputs by GitHub Actions
+# Do not edit manually - changes will be overwritten
+
+karpenter:
+  settings:
+    clusterName: tbyte-dev
+    clusterEndpoint: https://AC8EB20BED07CB142422D0F94D572F9C.gr7.eu-central-1.eks.amazonaws.com
+    interruptionQueue: 
+  
+  serviceAccount:
+    annotations:
+      eks.amazonaws.com/role-arn: arn:aws:iam::575491070504:role/KarpenterControllerRole-tbyte-dev
