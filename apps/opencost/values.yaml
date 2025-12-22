@@ -1,14 +1,14 @@
 # OpenCost Configuration for AWS EKS
 
-# Prometheus integration with existing monitoring stack
-prometheus:
-  internal:
-    enabled: true
-    serviceName: monitoring-kube-prometheus-prometheus
-    namespaceName: monitoring
-    port: 9090
-
 opencost:
+  # Prometheus integration with existing monitoring stack
+  prometheus:
+    internal:
+      enabled: true
+      serviceName: monitoring-kube-prometheus-prometheus
+      namespaceName: monitoring
+      port: 9090
+
   exporter:
     defaultClusterId: tbyte-dev
     replicas: 1
@@ -16,11 +16,6 @@ opencost:
     # Use latest OpenCost application version
     image:
       tag: "1.119.0"
-    
-    # Override Prometheus endpoint via env list
-    env:
-      - name: PROMETHEUS_SERVER_ENDPOINT
-        value: "http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090"
     
     # Resource requests and limits
     resources:
