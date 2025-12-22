@@ -54,45 +54,50 @@ jobs:
           echo "rds_port=$(terragrunt output -raw db_port)" >> $GITHUB_OUTPUT
           echo "rds_database=$(terragrunt output -raw db_name)" >> $GITHUB_OUTPUT
       
-      # - name: Update Karpenter values.yaml
-      #   run: |
-      #     cat > apps/karpenter/values.yaml <<EOF
-      #     # Auto-generated from Terragrunt outputs by GitHub Actions
-      #     # Do not edit manually - changes will be overwritten
-      #     
-      #     karpenter:
-      #       settings:
-      #         clusterName: ${{ steps.terraform.outputs.cluster_name }}
-      #         clusterEndpoint: ${{ steps.terraform.outputs.cluster_endpoint }}
-      #         interruptionQueue: ${{ steps.terraform.outputs.interruption_queue }}
-      #       
-      #       serviceAccount:
-      #         annotations:
-      #           eks.amazonaws.com/role-arn: ${{ steps.terraform.outputs.karpenter_role_arn }}
-      #     EOF
+      - name: Update Karpenter values.yaml
+        run: |
+          cat > apps/karpenter/values.yaml <<EOF
+          # Auto-generated from Terragrunt outputs by GitHub Actions
+          # Do not edit manually - changes will be overwritten
+          
+          karpenter:
+            settings:
+              clusterName: ${{ steps.terraform.outputs.cluster_name }}
+              clusterEndpoint: ${{ steps.terraform.outputs.cluster_endpoint }}
+              interruptionQueue: ${{ steps.terraform.outputs.interruption_queue }}
+            
+            serviceAccount:
+              annotations:
+                eks.amazonaws.com/role-arn: ${{ steps.terraform.outputs.karpenter_role_arn }}
+            
+            tolerations:
+              - effect: NoSchedule
+                key: node-type
+                value: system
+          EOF
       
       - name: Update Grafana ServiceAccount
         run: |
           sed -i "s|eks.amazonaws.com/role-arn: \".*\"|eks.amazonaws.com/role-arn: \"${{ steps.terraform.outputs.grafana_role_arn }}\"|g" apps/kube-prometheus-stack/values.yaml
       
-      # - name: Update EC2NodeClass
-      #   run: |
-      #     cat > apps/karpenter/templates/ec2nodeclass.yaml <<EOF
-      #     apiVersion: karpenter.k8s.aws/v1
-      #     kind: EC2NodeClass
-      #     metadata:
-      #       name: default
-      #     spec:
-      #       role: ${{ steps.terraform.outputs.karpenter_node_role }}
-      #       amiSelectorTerms:
-      #         - alias: al2023@latest
-      #       subnetSelectorTerms:
-      #         - tags:
-      #             karpenter.sh/discovery: ${{ steps.terraform.outputs.cluster_name }}
-      #       securityGroupSelectorTerms:
-      #         - tags:
-      #             karpenter.sh/discovery: ${{ steps.terraform.outputs.cluster_name }}
-      #     EOF
+      - name: Update EC2NodeClass
+        run: |
+          cat > apps/karpenter/templates/ec2nodeclass.yaml <<EOF
+          apiVersion: karpenter.k8s.aws/v1
+          kind: EC2NodeClass
+          metadata:
+            name: default
+          spec:
+            role: ${{ steps.terraform.outputs.karpenter_node_role }}
+            amiSelectorTerms:
+              - alias: al2023@latest
+            subnetSelectorTerms:
+              - tags:
+                  karpenter.sh/discovery: ${{ steps.terraform.outputs.cluster_name }}
+            securityGroupSelectorTerms:
+              - tags:
+                  karpenter.sh/discovery: ${{ steps.terraform.outputs.cluster_name }}
+          EOF
       
       - name: Update External Secrets ServiceAccount
         run: |
@@ -132,7 +137,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add apps/kube-prometheus-stack/values.yaml apps/external-secrets/values.yaml apps/external-secrets/templates/rds-external-secret.yaml
-          # git add apps/karpenter/values.yaml apps/karpenter/templates/ec2nodeclass.yaml
+          git add apps/kube-prometheus-stack/values.yaml apps/external-secrets/values.yaml apps/external-secrets/templates/rds-external-secret.yaml apps/karpenter/values.yaml apps/karpenter/templates/ec2nodeclass.yaml
           git diff --staged --quiet || git commit -m "chore: Update app values from Terragrunt outputs [skip ci]"
           git push
