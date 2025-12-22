@@ -10,6 +10,9 @@ istiod:
   pilot:
     env:
       EXTERNAL_ISTIOD: false
+    # Set webhook failure policy to Fail (production setting)
+    webhooks:
+      failurePolicy: Fail
     tolerations:
       - key: "node-type"
         operator: "Equal"
