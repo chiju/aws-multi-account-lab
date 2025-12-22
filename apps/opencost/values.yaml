@@ -1,4 +1,4 @@
-# Minimal OpenCost Configuration
+# OpenCost Configuration for AWS EKS
 opencost:
   prometheus:
     internal:
