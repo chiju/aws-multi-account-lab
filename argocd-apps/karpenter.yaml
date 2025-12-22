@@ -13,7 +13,7 @@ spec:
     path: apps/karpenter
   destination:
     server: https://kubernetes.default.svc
-    namespace: kube-system
+    namespace: karpenter
   syncPolicy:
     automated:
       prune: true
