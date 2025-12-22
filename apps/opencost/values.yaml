@@ -17,9 +17,10 @@ opencost:
     image:
       tag: "1.119.0"
     
-    # Override Prometheus endpoint via environment variable
-    extraEnv:
-      PROMETHEUS_SERVER_ENDPOINT: "http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090"
+    # Override Prometheus endpoint via env list
+    env:
+      - name: PROMETHEUS_SERVER_ENDPOINT
+        value: "http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090"
     
     # Resource requests and limits
     resources:
