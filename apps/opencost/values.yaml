@@ -9,6 +9,10 @@ opencost:
   
   exporter:
     defaultClusterId: tbyte-dev
+    # Override environment variables directly
+    env:
+      - name: PROMETHEUS_SERVER_ENDPOINT
+        value: "http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090"
     
     # Resource requests and limits
     resources:
