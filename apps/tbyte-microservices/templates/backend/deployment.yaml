@@ -23,22 +23,21 @@ spec:
         instrumentation.opentelemetry.io/inject-nodejs: "tbyte/tbyte-instrumentation"
         instrumentation.opentelemetry.io/otel-service-name: "tbyte-backend"
     spec:
-      # Tolerate system node taints for infrastructure workloads
+      # Tolerate application node taints for microservices
       tolerations:
         - key: "node-type"
           operator: "Equal"
-          value: "system"
+          value: "application"
           effect: "NoSchedule"
-      # Prefer system nodes for infrastructure workloads
+      # Prefer application nodes for microservices
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
             - weight: 100
               preference:
                 matchExpressions:
-                  - key: "eks.amazonaws.com/nodegroup"
-                    operator: "In"
-                    values: ["tbyte-dev-system-nodes"]
+                  - key: "karpenter.sh/nodepool"
+                    operator: "Exists"
       serviceAccountName: {{ include "tbyte-microservices.fullname" . }}-backend
       securityContext:
         runAsNonRoot: true

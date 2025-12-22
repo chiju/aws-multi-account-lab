@@ -16,6 +16,10 @@ spec:
         group: karpenter.k8s.aws
         kind: EC2NodeClass
         name: default
+      taints:
+        - key: node-type
+          value: application
+          effect: NoSchedule
   limits:
     cpu: 10
   disruption:
