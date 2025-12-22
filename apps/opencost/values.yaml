@@ -3,24 +3,27 @@
 # Prometheus integration with existing monitoring stack
 prometheus:
   internal:
-    namespaceName: monitoring
+    enabled: true
     serviceName: monitoring-kube-prometheus-prometheus
+    namespaceName: monitoring
     port: 9090
 
 opencost:
   exporter:
-    env:
-      PROMETHEUS_SERVER_ENDPOINT: "http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090"
     defaultClusterId: tbyte-dev
     replicas: 1
     
     # Use latest OpenCost application version
     image:
       tag: "1.119.0"
-
-  # Data retention settings
-  dataRetention:
-    dailyResolutionDays: 30
+    
+    # Resource requests and limits
+    resources:
+      requests:
+        cpu: "10m"
+        memory: "55Mi"
+      limits:
+        memory: "1Gi"
     
     # Resource requests and limits
     resources:
