@@ -1,13 +1,13 @@
-# OpenCost Configuration for AWS EKS - Override Default Prometheus Settings
+# OpenCost Configuration for AWS EKS - External Prometheus (Working Method)
 opencost:
   exporter:
     defaultClusterId: tbyte-dev
   prometheus:
-    internal:
+    external:
       enabled: true
-      serviceName: monitoring-kube-prometheus-prometheus
-      namespaceName: monitoring
-      port: 9090
+      url: "http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090"
+    internal:
+      enabled: false
 
 serviceAccount:
   create: true
