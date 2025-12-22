@@ -1,16 +1,24 @@
-# OpenCost Configuration for AWS EKS - Simplified
-prometheus:
-  internal:
-    enabled: true
-    namespaceName: monitoring
-    serviceName: monitoring-kube-prometheus-prometheus
-    port: 9090
+# OpenCost Configuration for AWS EKS - Based on Production Template
+opencost:
+  exporter:
+    aws:
+      cluster_id: tbyte-dev
+    cloudProviderApiKey: ""
+  prometheus:
+    internal:
+      enabled: true
+      namespaceName: monitoring
+      port: 9090
+      serviceName: monitoring-kube-prometheus-prometheus
 
-exporter:
-  defaultClusterId: tbyte-dev
-  env:
-    - name: PROMETHEUS_SERVER_ENDPOINT
-      value: "http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090"
+serviceAccount:
+  create: true
+  name: opencost
+
+serviceMonitor:
+  additionalLabels:
+    release: prometheus
+  enabled: true
     
     # Resource requests and limits
     resources:
