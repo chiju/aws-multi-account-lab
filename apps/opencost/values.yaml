@@ -1,4 +1,17 @@
-# OpenCost Configuration - Direct Templates
 opencost:
-  exporter:
-    defaultClusterId: tbyte-dev
+  tolerations:
+  - key: node-type
+    operator: Equal
+    value: system
+    effect: NoSchedule
+  
+  prometheus:
+    external:
+      url: http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+  
+  opencost:
+    exporter:
+      defaultClusterId: tbyte-dev
+      
+  ui:
+    enabled: true
